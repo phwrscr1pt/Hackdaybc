@@ -393,7 +393,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
-| 2026-03-07 | Fixed SSRF lab navigation links to use /api/ prefix (Home, Resources, Wordlist download) for nginx reverse proxy compatibility |
+| 2026-03-07 | Fixed SSRF lab navigation links to use /api/ prefix (Home, Resources, Wordlist download) - deployed and verified working |
 | 2026-03-07 | Fixed JWT Weak Key walkthrough: correct cookie name (auth_token_secure), added OpenSSL signing method, working forged token |
 | 2026-03-07 | Enhanced walkthrough-sqli-jwt.md: added detailed step-by-step for UNION, Error-based, Blind SQLi, JWT None Algorithm, JWT Weak Key (690 lines added) |
 | 2026-03-07 | Enhanced SSH walkthrough: added key transfer methods (SCP, copy-paste, one-line injection), fixed output format, added directory permissions explanation (r vs x) |
