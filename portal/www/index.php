@@ -556,7 +556,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 LeaguesOfCode Thailand. All rights reserved.</p>
+                <p>&copy; 2026 LeaguesOfCode Thailand. All rights reserved. | v1.0.1</p>
                 <div class="social-links">
                     <a href="#"><i class="bi bi-facebook"></i></a>
                     <a href="#"><i class="bi bi-twitter-x"></i></a>
