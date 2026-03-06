@@ -96,8 +96,8 @@ def index():
 <nav>
   <a href="/" class="logo"><div class="logo-icon"><i class="bi bi-braces"></i></div>Leagues<span>Of</span>Code</a>
   <ul class="nav-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/resources">Resources</a></li>
+    <li><a href="/api/">Home</a></li>
+    <li><a href="/api/resources">Resources</a></li>
   </ul>
 </nav>
 
@@ -250,8 +250,8 @@ def resources():
 <nav>
   <a href="/" class="logo"><div class="logo-icon"><i class="bi bi-braces"></i></div>Leagues<span>Of</span>Code</a>
   <ul class="nav-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/resources" class="active">Resources</a></li>
+    <li><a href="/api/">Home</a></li>
+    <li><a href="/api/resources" class="active">Resources</a></li>
   </ul>
 </nav>
 <main>
@@ -267,7 +267,7 @@ def resources():
         <div class="rc-meta"><span class="rc-tag">TXT</span><span class="rc-tag">wordlist</span><span>~30 entries</span></div>
       </div>
     </div>
-    <a class="btn-dl" href="/wordlist.txt" download="wordlist.txt"><i class="bi bi-download"></i> Download</a>
+    <a class="btn-dl" href="/api/wordlist.txt" download="wordlist.txt"><i class="bi bi-download"></i> Download</a>
   </div>
   <div class="resource-card">
     <div class="rc-left">
