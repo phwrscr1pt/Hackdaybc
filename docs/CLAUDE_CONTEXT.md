@@ -273,6 +273,7 @@ Note: VM structure updated 2026-03-06 with realism refactoring.
 12. **header.php outdated links** - Updated navigation: `/sqli/` → `/resources/`, `/jwt/` → `/account/`
 13. **Missing nginx redirects for new filenames** - Added redirects for `/sqli/*.php` and `/jwt/*.php` using new filenames (login.php, directory.php, portal.php, etc.)
 14. **SSH lab permission denied** - john's home was `drwxr-x---` (750), preventing noob from traversing to .ssh directory. Fixed by adding `chmod 711 /home/john` in both Dockerfile and entrypoint.sh to allow directory traversal.
+15. **SSRF lab navigation broken** - Links in app.py used root paths (`/`, `/resources`, `/wordlist.txt`) but lab is served at `/api/` via nginx. Fixed by updating all links to use `/api/` prefix.
 
 ---
 
@@ -392,6 +393,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Fixed SSRF lab navigation links to use /api/ prefix (Home, Resources, Wordlist download) for nginx reverse proxy compatibility |
 | 2026-03-07 | Fixed JWT Weak Key walkthrough: correct cookie name (auth_token_secure), added OpenSSL signing method, working forged token |
 | 2026-03-07 | Enhanced walkthrough-sqli-jwt.md: added detailed step-by-step for UNION, Error-based, Blind SQLi, JWT None Algorithm, JWT Weak Key (690 lines added) |
 | 2026-03-07 | Enhanced SSH walkthrough: added key transfer methods (SCP, copy-paste, one-line injection), fixed output format, added directory permissions explanation (r vs x) |
@@ -422,5 +424,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Fixed JWT Weak Key walkthrough with correct cookie name)*
+*Last Updated: 2026-03-07 (Fixed SSRF lab navigation links for /api/ prefix)*
 *This file helps Claude understand the project context in new sessions.*
