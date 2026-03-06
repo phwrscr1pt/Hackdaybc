@@ -267,6 +267,10 @@ Note: VM structure updated 2026-03-06 with realism refactoring.
 6. **JWT portal.php redirect error** - Moved token check before `header.php` include to fix "headers already sent" error
 7. **JWT admin.php redirect error** - Same fix as portal.php
 8. **books.php broken link** - Changed link from `lab5_request.php` to `request.php`
+9. **login.php headers warning** - Moved `header()` call before `header.php` include to fix "headers already sent" error
+10. **signin.php headers warning** - Moved `header.php` include after `setcookie()` call to fix "headers already sent" error
+11. **config.php JWT_SECRET redefinition** - Added `if (!defined('JWT_SECRET'))` wrapper to prevent warning
+12. **header.php outdated links** - Updated navigation: `/sqli/` → `/resources/`, `/jwt/` → `/account/`
 
 ---
 
@@ -386,6 +390,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-06 | Fixed login.php, signin.php headers warnings; config.php JWT_SECRET redefinition; header.php outdated nav links |
 | 2026-03-06 | Set up GitHub repo and git deployment workflow |
 | 2026-03-06 | Created labs-source folder with all source code |
 | 2026-03-06 | Added version v1.0.1 to portal footer |
@@ -409,5 +414,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-06 (GitHub repo setup, deployment workflow, version v1.0.1)*
+*Last Updated: 2026-03-06 (Fixed PHP warnings, updated nav links)*
 *This file helps Claude understand the project context in new sessions.*
