@@ -393,6 +393,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Enhanced walkthrough-ssrf.md: added detailed step-by-step (Steps 1-8), IP bypass techniques, Python exploit, attack flow diagram |
 | 2026-03-07 | Enhanced walkthrough-file-upload.md: added detailed step-by-step (Steps 1-8), polyglot creation, Python exploit, bash one-liner |
 | 2026-03-07 | Enhanced walkthrough-csrf.md: added detailed step-by-step (Steps 1-9), attack payloads, curl testing, troubleshooting |
 | 2026-03-07 | Enhanced walkthrough-xss.md: added detailed step-by-step (Steps 1-10), filter bypass, working payloads table, quick test URLs |
@@ -427,5 +428,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Added detailed File Upload walkthrough)*
+*Last Updated: 2026-03-07 (Added detailed SSRF walkthrough)*
 *This file helps Claude understand the project context in new sessions.*
