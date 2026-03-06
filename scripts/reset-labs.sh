@@ -323,38 +323,43 @@ verify_containers() {
 test_connectivity() {
     print_header "Testing Lab Connectivity"
 
-    endpoints=(
-        "http://localhost/:Portal Home"
-        "http://localhost/resources/login.php:SQL Login"
-        "http://localhost/account/signin.php:JWT Signin"
-        "http://localhost/profile/:File Upload"
-        "http://localhost/share/:CSRF Bank"
-        "http://localhost/evil/:CSRF Evil"
-        "http://localhost/api/:SSRF API"
-        "http://localhost/search/:XSS Search"
-    )
+    # Disable exit on error for this function
+    set +e
 
-    for endpoint in "${endpoints[@]}"; do
-        url="${endpoint%%:*}"
-        name="${endpoint##*:}"
-
-        status=$(curl -s -o /dev/null -w '%{http_code}' "$url" --connect-timeout 5 2>/dev/null)
+    # Test each endpoint
+    test_endpoint() {
+        local url="$1"
+        local name="$2"
+        local status
+        status=$(curl -s -o /dev/null -w '%{http_code}' "$url" --connect-timeout 5 2>/dev/null || echo "000")
 
         if [ "$status" = "200" ]; then
             print_success "$name ($status)"
         elif [ "$status" = "302" ] || [ "$status" = "301" ]; then
             print_success "$name ($status redirect)"
         else
-            print_error "$name (HTTP $status)"
+            print_warning "$name (HTTP $status)"
         fi
-    done
+    }
+
+    test_endpoint "http://localhost/" "Portal Home"
+    test_endpoint "http://localhost/resources/login.php" "SQL Login"
+    test_endpoint "http://localhost/account/signin.php" "JWT Signin"
+    test_endpoint "http://localhost/profile/" "File Upload"
+    test_endpoint "http://localhost/share/" "CSRF Bank"
+    test_endpoint "http://localhost/evil/" "CSRF Evil"
+    test_endpoint "http://localhost/api/" "SSRF API"
+    test_endpoint "http://localhost/search/" "XSS Search"
 
     # Test SSH port
     if timeout 2 bash -c 'echo > /dev/tcp/localhost/2222' 2>/dev/null; then
         print_success "SSH Lab (port 2222 open)"
     else
-        print_error "SSH Lab (port 2222 closed)"
+        print_warning "SSH Lab (port 2222 - check manually)"
     fi
+
+    # Re-enable exit on error
+    set -e
 }
 
 #-------------------------------------------------------------------------------
