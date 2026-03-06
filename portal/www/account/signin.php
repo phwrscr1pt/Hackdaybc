@@ -1,7 +1,6 @@
 <?php
 require_once 'auth_helper.php';
 require_once '../config.php';
-require_once '../includes/header.php';
 
 $error = '';
 $success = false;
@@ -35,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Invalid credentials";
     }
 }
+
+require_once '../includes/header.php';
 ?>
 
 <div class="container py-5">
