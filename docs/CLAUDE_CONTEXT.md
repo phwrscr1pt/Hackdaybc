@@ -393,6 +393,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Enhanced walkthrough-file-upload.md: added detailed step-by-step (Steps 1-8), polyglot creation, Python exploit, bash one-liner |
 | 2026-03-07 | Enhanced walkthrough-csrf.md: added detailed step-by-step (Steps 1-9), attack payloads, curl testing, troubleshooting |
 | 2026-03-07 | Enhanced walkthrough-xss.md: added detailed step-by-step (Steps 1-10), filter bypass, working payloads table, quick test URLs |
 | 2026-03-07 | Fixed SSRF lab navigation links to use /api/ prefix (Home, Resources, Wordlist download) - deployed and verified working |
@@ -426,5 +427,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Added detailed CSRF walkthrough)*
+*Last Updated: 2026-03-07 (Added detailed File Upload walkthrough)*
 *This file helps Claude understand the project context in new sessions.*
