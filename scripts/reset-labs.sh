@@ -210,8 +210,8 @@ reset_file_upload() {
         sleep 3
     fi
 
-    # Clear uploaded files
-    docker exec loc_file_upload bash -c "
+    # Clear uploaded files (use sh, not bash - alpine image)
+    docker exec loc_file_upload sh -c "
         count=\$(ls -1 /app/uploads/ 2>/dev/null | wc -l)
         rm -rf /app/uploads/* 2>/dev/null
         echo \"Removed \$count uploaded files\"
