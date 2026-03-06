@@ -12,6 +12,7 @@ api/users
 api/keys
 api/config
 api/status
+
 api/admin
 debug
 debug/vars
