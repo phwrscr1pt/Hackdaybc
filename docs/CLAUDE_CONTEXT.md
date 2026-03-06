@@ -392,6 +392,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Enhanced SSH walkthrough: added key transfer methods (SCP, copy-paste, one-line injection), fixed output format, added directory permissions explanation (r vs x) |
 | 2026-03-07 | Fixed SSH lab permissions: added chmod 711 /home/john in Dockerfile and entrypoint.sh |
 | 2026-03-06 | Updated walkthroughs: XSS search path (/search/search?q=), SSRF (LinkScope), File Upload (AetherVision AI) |
 | 2026-03-06 | Added missing nginx redirects for /sqli/*.php and /jwt/*.php with new filenames |
@@ -419,5 +420,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Fixed SSH lab permissions for directory traversal)*
+*Last Updated: 2026-03-07 (Enhanced SSH walkthrough with key transfer methods and permissions explanation)*
 *This file helps Claude understand the project context in new sessions.*
