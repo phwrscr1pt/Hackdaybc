@@ -1,7 +1,7 @@
 # SSRF Lab Walkthrough
 
 > **Lab URL:** http://10.10.61.221/api/
-> **Business Name:** Developer API
+> **Business Name:** LinkScope — Developer API Tools
 > **Last Verified:** March 2026
 
 ---
@@ -18,7 +18,7 @@ In this lab, you'll exploit an API endpoint that fetches URLs to access internal
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌──────────────────┐
-│   Attacker   │────►│   Developer API │────►│ Internal Service │
+│   Attacker   │────►│    LinkScope    │────►│ Internal Service │
 │   (Internet) │     │     /api/       │     │  127.0.0.1:7070  │
 └──────────────┘     │  (loc_ssrf_lab) │     │    /internal/    │
                      └─────────────────┘     └──────────────────┘
@@ -35,7 +35,7 @@ In this lab, you'll exploit an API endpoint that fetches URLs to access internal
 ## Step 1: Explore the API
 
 1. Go to http://10.10.61.221/api/
-2. You'll see a "Developer API" interface
+2. You'll see "LinkScope — Developer API Tools" interface
 3. Find the URL fetcher functionality
 
 The API allows you to:

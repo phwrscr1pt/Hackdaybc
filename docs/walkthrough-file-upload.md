@@ -1,7 +1,7 @@
 # File Upload Lab Walkthrough
 
 > **Lab URL:** http://10.10.61.221/profile/
-> **Business Name:** Profile Settings
+> **Business Name:** AetherVision AI — Quantum Deep Validator
 > **Last Verified:** March 2026
 
 ---
@@ -18,7 +18,7 @@ In this lab, you'll bypass file upload restrictions using a **polyglot file** - 
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌──────────────────┐
-│   Attacker   │────►│  Profile Upload │────►│  uploads/ folder │
+│   Attacker   │────►│  AetherVision   │────►│  uploads/ folder │
 │              │     │    /profile/    │     │                  │
 └──────────────┘     │(loc_file_upload)│     │  yourfile.php    │
                      └─────────────────┘     └──────────────────┘
@@ -49,7 +49,7 @@ The upload feature checks:
 ## Step 1: Explore the Upload Feature
 
 1. Go to http://10.10.61.221/profile/
-2. Find the "Avatar Upload" or "Profile Picture" feature
+2. You'll see "AetherVision AI — Quantum Deep Validator" with a JPEG upload form
 3. Try uploading a normal JPEG image - it works
 4. Try uploading a .php file - it gets rejected
 
