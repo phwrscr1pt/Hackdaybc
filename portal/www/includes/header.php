@@ -216,12 +216,12 @@
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/members/">Members</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/sqli/">Resources</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/resources/">Resources</a></li>
                     <li class="nav-item"><a class="nav-link" href="/share/">Banking</a></li>
                     <li class="nav-item"><a class="nav-link" href="/api/">API</a></li>
                     <li class="nav-item"><a class="nav-link" href="/search/">Blog</a></li>
                 </ul>
-                <a href="/jwt/" class="btn btn-primary">Sign In</a>
+                <a href="/account/" class="btn btn-primary">Sign In</a>
             </div>
         </div>
     </nav>

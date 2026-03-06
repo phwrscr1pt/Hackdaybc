@@ -9,7 +9,9 @@ define('DB_USER', getenv('DB_USER') ?: 'locadmin');
 define('DB_PASS', getenv('DB_PASS') ?: 'locpass123');
 
 // JWT Configuration
-define('JWT_SECRET', getenv('JWT_SECRET') ?: 'secret123');
+if (!defined('JWT_SECRET')) {
+    define('JWT_SECRET', getenv('JWT_SECRET') ?: 'secret123');
+}
 
 // Application Settings
 define('APP_NAME', 'LeaguesOfCode Lab Portal');
