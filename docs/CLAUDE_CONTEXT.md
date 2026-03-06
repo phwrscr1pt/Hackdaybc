@@ -272,6 +272,7 @@ Note: VM structure updated 2026-03-06 with realism refactoring.
 11. **config.php JWT_SECRET redefinition** - Added `if (!defined('JWT_SECRET'))` wrapper to prevent warning
 12. **header.php outdated links** - Updated navigation: `/sqli/` → `/resources/`, `/jwt/` → `/account/`
 13. **Missing nginx redirects for new filenames** - Added redirects for `/sqli/*.php` and `/jwt/*.php` using new filenames (login.php, directory.php, portal.php, etc.)
+14. **SSH lab permission denied** - john's home was `drwxr-x---` (750), preventing noob from traversing to .ssh directory. Fixed by adding `chmod 711 /home/john` in both Dockerfile and entrypoint.sh to allow directory traversal.
 
 ---
 
@@ -391,6 +392,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Fixed SSH lab permissions: added chmod 711 /home/john in Dockerfile and entrypoint.sh |
 | 2026-03-06 | Updated walkthroughs: XSS search path (/search/search?q=), SSRF (LinkScope), File Upload (AetherVision AI) |
 | 2026-03-06 | Added missing nginx redirects for /sqli/*.php and /jwt/*.php with new filenames |
 | 2026-03-06 | Fixed login.php, signin.php headers warnings; config.php JWT_SECRET redefinition; header.php outdated nav links |
@@ -417,5 +419,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-06 (Updated walkthroughs with correct paths and business names)*
+*Last Updated: 2026-03-07 (Fixed SSH lab permissions for directory traversal)*
 *This file helps Claude understand the project context in new sessions.*
