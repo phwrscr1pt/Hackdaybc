@@ -295,7 +295,7 @@ def download_wordlist():
     return send_file(WORDLIST_PATH, as_attachment=True, download_name='wordlist.txt', mimetype='text/plain')
 
 
-@app.route('/api/fetch', methods=['POST'])
+@app.route('/fetch', methods=['POST'])
 def fetch():
     data = request.get_json(silent=True)
     if not data or 'url' not in data:
