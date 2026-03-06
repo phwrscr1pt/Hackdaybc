@@ -81,49 +81,81 @@ reset_csrf_bank() {
         sleep 3
     fi
 
-    # Reset database - keep only somchai with 1,000,000 baht
+    # Reset database - database is at /tmp/bank.db
+    # Structure: users table (id, username, password, account_no)
+    #            accounts table (account_no, balance)
+    #            transactions table
     docker exec loc_csrf_bank python3 -c "
 import sqlite3
 import os
 
-db_path = '/app/bank.db'
-if os.path.exists(db_path):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+db_path = '/tmp/bank.db'
 
-    # Get current user count
-    cursor.execute('SELECT COUNT(*) FROM users')
-    before_count = cursor.fetchone()[0]
+# Initialize database if not exists
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
 
-    # Delete all users except somchai
-    cursor.execute('DELETE FROM users WHERE username != \"somchai\"')
+# Create tables if they don't exist
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    username   TEXT NOT NULL UNIQUE,
+    password   TEXT NOT NULL,
+    account_no TEXT NOT NULL UNIQUE
+)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS accounts (
+    account_no TEXT PRIMARY KEY,
+    balance    REAL DEFAULT 0
+)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS transactions (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_acc  TEXT,
+    to_acc    TEXT,
+    amount    REAL,
+    type      TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)''')
+conn.commit()
 
-    # Reset somchai's balance to 1,000,000
-    cursor.execute('UPDATE users SET balance = 1000000 WHERE username = \"somchai\"')
+# Get current user count
+cursor.execute('SELECT COUNT(*) FROM users')
+before_count = cursor.fetchone()[0]
 
-    # Reset account number sequence (next account will be 1002)
-    cursor.execute('DELETE FROM sqlite_sequence WHERE name=\"users\"')
-    cursor.execute('INSERT INTO sqlite_sequence (name, seq) VALUES (\"users\", 1001)')
+# Delete all users except somchai
+cursor.execute('DELETE FROM users WHERE username != \"somchai\"')
 
-    # Clear transaction history
-    cursor.execute('DELETE FROM transactions')
+# Delete all accounts except 1001
+cursor.execute('DELETE FROM accounts WHERE account_no != \"1001\"')
 
-    conn.commit()
+# Reset somchai's balance to 1,000,000
+cursor.execute('UPDATE accounts SET balance = 1000000 WHERE account_no = \"1001\"')
 
-    # Get final count
-    cursor.execute('SELECT COUNT(*) FROM users')
-    after_count = cursor.fetchone()[0]
+# Ensure somchai exists
+existing = cursor.execute(\"SELECT id FROM users WHERE username = 'somchai'\").fetchone()
+if not existing:
+    cursor.execute(\"INSERT INTO users (username, password, account_no) VALUES ('somchai', 'password123', '1001')\")
+    cursor.execute(\"INSERT OR REPLACE INTO accounts (account_no, balance) VALUES ('1001', 1000000.0)\")
 
-    cursor.execute('SELECT username, balance, account_no FROM users')
-    users = cursor.fetchall()
+# Reset account number sequence (next account will be 1002)
+cursor.execute('DELETE FROM sqlite_sequence WHERE name=\"users\"')
+cursor.execute('INSERT OR REPLACE INTO sqlite_sequence (name, seq) VALUES (\"users\", 1001)')
 
-    conn.close()
+# Clear transaction history
+cursor.execute('DELETE FROM transactions')
 
-    print(f'Users before: {before_count}, after: {after_count}')
-    for u in users:
-        print(f'  - {u[0]}: Account {u[2]}, Balance: {u[1]:,.0f} baht')
-else:
-    print('Database not found - will be created on first access')
+conn.commit()
+
+# Get final count
+cursor.execute('SELECT COUNT(*) FROM users')
+after_count = cursor.fetchone()[0]
+
+cursor.execute('SELECT u.username, a.balance, u.account_no FROM users u JOIN accounts a ON u.account_no = a.account_no')
+users = cursor.fetchall()
+
+conn.close()
+
+print(f'Users before: {before_count}, after: {after_count}')
+for u in users:
+    print(f'  - {u[0]}: Account {u[2]}, Balance: {u[1]:,.0f} baht')
 " 2>/dev/null
 
     if [ $? -eq 0 ]; then
