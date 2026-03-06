@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Portal - Payload Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #0f172a;
+      --secondary: #1e293b;
+      --accent: #3b82f6;
+      --accent-light: #60a5fa;
+      --gold: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.1);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+    body { background: var(--primary); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+    header { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo span { color: var(--accent); }
+    .status-pill { display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); background: var(--secondary); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr 280px; gap: 1rem; max-width: 1200px; width: 100%; margin: 0 auto; padding: 1.5rem; }
+
+    .editor-section { display: flex; flex-direction: column; background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .editor-topbar { background: var(--primary); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .editor-tab { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; padding: 6px 12px; border-radius: 6px; background: var(--secondary); color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .editor-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+
+    .line-numbers { display: flex; flex: 1; overflow: hidden; }
+    .line-nums { background: var(--primary); border-right: 1px solid var(--border); padding: 1rem 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; text-align: right; min-width: 44px; user-select: none; white-space: pre; overflow: hidden; }
+    textarea#payload { flex: 1; background: var(--secondary); border: none; outline: none; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text); padding: 1rem; line-height: 1.6; min-height: 400px; width: 100%; }
+    textarea#payload::placeholder { color: var(--text-muted); }
+
+    .char-info { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); padding: 8px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+    .editor-statusbar { background: var(--accent); padding: 6px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .statusbar-text { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: white; }
+
+    .side-panel { display: flex; flex-direction: column; gap: 12px; }
+    .panel-card { background: var(--secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+    .panel-body { padding: 16px; }
+
+    .action-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; text-decoration: none; }
+    .action-btn:last-child { margin-bottom: 0; }
+    .btn-store { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: white; }
+    .btn-store:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+    .btn-launch { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-launch:hover { border-color: var(--green); color: var(--green); }
+
+    .endpoint-row { display: flex; align-items: center; gap: 8px; background: var(--primary); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+    .endpoint-row:last-child { margin-bottom: 0; }
+    .method-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 600; padding: 3px 6px; border-radius: 4px; }
+    .method-get { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+    .method-post { background: rgba(59, 130, 246, 0.15); color: var(--accent-light); }
+    .endpoint-path { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text); }
+
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 999; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon"><i class="bi bi-link-45deg"></i></div>
+    Leagues<span>Of</span>Code
+  </div>
+  <div class="status-pill"><div class="status-dot"></div>running on :9999</div>
+</header>
+
+<div class="workspace">
+  <div class="editor-section">
+    <div class="editor-topbar">
+      <div class="editor-tab"><i class="bi bi-file-code" style="color: var(--accent);"></i>index.html</div>
+      <div class="editor-meta" id="cursor-pos">Ln 1, Col 1</div>
+    </div>
+    <div class="line-numbers">
+      <div class="line-nums" id="line-nums">1</div>
+      <textarea id="payload" spellcheck="false" placeholder="<!-- write your HTML payload here -->">{{ current }}</textarea>
+    </div>
+    <div class="char-info"><span id="char-count">0 characters</span><span>HTML</span></div>
+    <div class="editor-statusbar"><span class="statusbar-text">UTF-8 · LF · HTML</span><span class="statusbar-text" id="line-count">1 line</span></div>
+  </div>
+
+  <div class="side-panel">
+    <div class="panel-card">
+      <div class="panel-header"><i class="bi bi-lightning-charge"></i>Actions</div>
+      <div class="panel-body">
+        <button class="action-btn btn-store" onclick="storePayload()"><i class="bi bi-cloud-arrow-up"></i>Store Website</button>
+        <a class="action-btn btn-launch" href="/site" target="_blank"><i class="bi bi-box-arrow-up-right"></i>Simulate Victim</a>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="panel-header"><i class="bi bi-diagram-3"></i>Endpoints</div>
+      <div class="panel-body">
+        <div class="endpoint-row"><span class="method-tag method-post">POST</span><span class="endpoint-path">/store</span></div>
+        <div class="endpoint-row"><span class="method-tag method-get">GET</span><span class="endpoint-path">/site</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-icon" id="toast-icon"><i class="bi bi-check-circle"></i></span><span id="toast-text">Stored successfully</span></div>
+
+<script>
+  const textarea = document.getElementById('payload');
+  const lineNums = document.getElementById('line-nums');
+  const charCount = document.getElementById('char-count');
+  const lineCount = document.getElementById('line-count');
+  const cursorPos = document.getElementById('cursor-pos');
+
+  function updateEditor() {
+    const lines = textarea.value.split('\n');
+    lineNums.textContent = lines.map((_, i) => i + 1).join('\n');
+    charCount.textContent = textarea.value.length + ' characters';
+    lineCount.textContent = lines.length + ' line' + (lines.length !== 1 ? 's' : '');
+  }
+
+  function updateCursor() {
+    const val = textarea.value.substring(0, textarea.selectionStart);
+    const line = val.split('\n').length;
+    const col = val.split('\n').pop().length + 1;
+    cursorPos.textContent = 'Ln ' + line + ', Col ' + col;
+  }
+
+  textarea.addEventListener('input', updateEditor);
+  textarea.addEventListener('keyup', updateCursor);
+  textarea.addEventListener('click', updateCursor);
+  textarea.addEventListener('scroll', () => { lineNums.scrollTop = textarea.scrollTop; });
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      textarea.value = textarea.value.substring(0, start) + '  ' + textarea.value.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + 2;
+      updateEditor();
+    }
+  });
+
+  function showToast(msg, success=true) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-icon').innerHTML = success ? '<i class="bi bi-check-circle" style="color: var(--green);"></i>' : '<i class="bi bi-x-circle" style="color: var(--red);"></i>';
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  async function storePayload() {
+    const payload = textarea.value.trim();
+    if (!payload) { showToast('Payload is empty', false); return; }
+    const form = new FormData();
+    form.append('payload', textarea.value);
+    try {
+      const res = await fetch('/store', { method: 'POST', body: form });
+      const data = await res.json();
+      if (data.status === 'ok') { showToast('Stored — /site is ready'); }
+      else { showToast('Store failed', false); }
+    } catch(e) { showToast('Network error', false); }
+  }
+
+  updateEditor();
+</script>
+</body>
+</html>

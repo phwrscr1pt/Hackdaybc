@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: loc_lab_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_NAME=leaguesofcode_db
+      - DB_USER=locadmin
+      - DB_PASS=locpass123
+      - JWT_SECRET=secret123
+    networks:
+      - loc_network
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: loc_lab_db
+    environment:
+      - MYSQL_DATABASE=leaguesofcode_db
+      - MYSQL_USER=locadmin
+      - MYSQL_PASSWORD=locpass123
+      - MYSQL_ROOT_PASSWORD=rootpass123
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - loc_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  loc_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

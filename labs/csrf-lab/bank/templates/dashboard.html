@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}ThaiBank — หน้าหลัก{% endblock %}
+{% block content %}
+
+<div class="balance-card">
+  <div class="balance-label">ยอดเงินคงเหลือ</div>
+  <div class="balance-amount">
+    {{ "{:,.2f}".format(balance) }}
+    <span class="balance-currency">บาท</span>
+  </div>
+  <div class="balance-acc">เลขที่บัญชี &nbsp;<span>{{ session.account_no }}</span></div>
+</div>
+
+<div class="quick-actions">
+  <a href="/transfer" class="quick-btn">
+    <div class="quick-icon" style="background:#e8f0fe;">💸</div>
+    <div class="quick-label">โอนเงิน</div>
+  </a>
+  <a href="/deposit" class="quick-btn">
+    <div class="quick-icon" style="background:#e8f5ee;">💰</div>
+    <div class="quick-label">ฝากเงิน</div>
+  </a>
+  <a href="/withdraw" class="quick-btn">
+    <div class="quick-icon" style="background:#fdf2f2;">🏧</div>
+    <div class="quick-label">ถอนเงิน</div>
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">ประวัติธุรกรรมล่าสุด</div>
+    <div class="card-sub">10 รายการล่าสุด</div>
+  </div>
+  {% if transactions %}
+  <table>
+    <thead>
+      <tr>
+        <th>ประเภท</th>
+        <th>จาก</th>
+        <th>ไปยัง</th>
+        <th>จำนวนเงิน</th>
+        <th>วันที่/เวลา</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td>
+          {% if t.type == 'transfer' %}
+            <span class="badge badge-transfer">โอนเงิน</span>
+          {% elif t.type == 'deposit' %}
+            <span class="badge badge-deposit">ฝากเงิน</span>
+          {% else %}
+            <span class="badge badge-withdraw">ถอนเงิน</span>
+          {% endif %}
+        </td>
+        <td>{{ t.from_acc }}</td>
+        <td>{{ t.to_acc }}</td>
+        <td>
+          {% if t.type == 'transfer' and t.from_acc == session.account_no %}
+            <span class="amount-out">- {{ "{:,.2f}".format(t.amount) }}</span>
+          {% elif t.type == 'withdraw' %}
+            <span class="amount-out">- {{ "{:,.2f}".format(t.amount) }}</span>
+          {% else %}
+            <span class="amount-in">+ {{ "{:,.2f}".format(t.amount) }}</span>
+          {% endif %}
+        </td>
+        <td style="color: var(--gray); font-size: 0.85rem;">{{ t.timestamp }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align:center; padding: 3rem; color: var(--gray);">
+    <div style="font-size: 2rem; margin-bottom: 0.75rem;">📋</div>
+    <div>ยังไม่มีประวัติธุรกรรม</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

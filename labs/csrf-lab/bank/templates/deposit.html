@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}ThaiBank — ฝากเงิน{% endblock %}
+{% block content %}
+
+<div style="max-width: 520px; margin: 0 auto;">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">ฝากเงิน</div>
+      <div class="card-sub">เพิ่มยอดเงินเข้าบัญชีของคุณ</div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">⚠ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/deposit">
+      <div class="form-group">
+        <label>จำนวนเงินที่ต้องการฝาก (บาท)</label>
+        <input type="number" name="amount" placeholder="0.00" min="1" step="0.01">
+      </div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+        <a href="/dashboard" class="btn btn-outline" style="flex:1; text-align:center; line-height: 2.5;">ยกเลิก</a>
+        <button type="submit" class="btn btn-gold" style="flex:2;">ยืนยันการฝากเงิน</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

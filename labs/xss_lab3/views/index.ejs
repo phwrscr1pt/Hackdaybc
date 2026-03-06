@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ByteWise — Developer Insights & Tutorials</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/search/css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/search/" class="nav-brand">
+        <div class="brand-icon"><i class="bi bi-braces-asterisk"></i></div>
+        <div class="brand-text">
+          <span class="brand-name">ByteWise</span>
+          <span class="brand-tagline">Developer Insights</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="/search/" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">Tutorials</a>
+        <a href="#" class="nav-link">News</a>
+        <a href="#" class="nav-link">About</a>
+      </div>
+      <div class="nav-actions">
+        <form action="/search/search" method="GET" class="nav-search">
+          <input type="text" name="q" placeholder="Search articles...">
+          <button type="submit"><i class="bi bi-search"></i></button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge"><i class="bi bi-lightning-charge-fill"></i> Latest from the community</span>
+      <h1>Stay Updated with<br><span>Developer Trends</span></h1>
+      <p>Discover tutorials, best practices, and insights from developers around the world.</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Featured Post -->
+    <section class="featured-section">
+      <div class="featured-card">
+        <div class="featured-image">
+          <div class="featured-overlay">
+            <span class="post-category">Featured</span>
+          </div>
+        </div>
+        <div class="featured-content">
+          <div class="post-meta">
+            <span class="meta-item"><i class="bi bi-calendar3"></i> March 5, 2026</span>
+            <span class="meta-item"><i class="bi bi-clock"></i> 8 min read</span>
+          </div>
+          <h2>Getting Started with TypeScript in 2026: A Complete Guide</h2>
+          <p>Learn the fundamentals of TypeScript and why it's becoming the standard for modern web development. This comprehensive guide covers everything from basic types to advanced patterns.</p>
+          <div class="post-author">
+            <div class="author-avatar">JD</div>
+            <div class="author-info">
+              <span class="author-name">John Developer</span>
+              <span class="author-role">Senior Engineer @ TechCorp</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts -->
+    <section class="posts-section">
+      <div class="section-header">
+        <h2><i class="bi bi-clock-history"></i> Recent Articles</h2>
+        <a href="#" class="view-all">View all <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <div class="posts-grid">
+        <% articles.forEach((a, index) => { %>
+        <article class="post-card">
+          <div class="post-image post-image-<%= index % 4 %>">
+            <span class="post-category"><%= ['Tutorial', 'News', 'Tips', 'Guide'][index % 4] %></span>
+          </div>
+          <div class="post-content">
+            <div class="post-meta">
+              <span><i class="bi bi-calendar3"></i> Mar <%= 5 - index %>, 2026</span>
+              <span><i class="bi bi-chat-dots"></i> <%= (index + 1) * 3 %> comments</span>
+            </div>
+            <h3><%= a.title %></h3>
+            <p><%= a.summary %></p>
+            <div class="post-footer">
+              <div class="author-mini">
+                <div class="author-avatar-sm"><%= a.title.charAt(0).toUpperCase() %></div>
+                <span>@dev_user<%= index + 1 %></span>
+              </div>
+              <a href="#" class="read-more">Read more <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+      <div class="newsletter-content">
+        <div class="newsletter-icon"><i class="bi bi-envelope-paper"></i></div>
+        <div class="newsletter-text">
+          <h3>Subscribe to our newsletter</h3>
+          <p>Get the latest articles and tutorials delivered to your inbox weekly.</p>
+        </div>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Enter your email">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="brand-icon"><i class="bi bi-braces-asterisk"></i></div>
+        <span>ByteWise</span>
+      </div>
+      <p>&copy; 2026 ByteWise Developer Blog. Part of LeaguesOfCode Thailand.</p>
+      <div class="footer-links">
+        <a href="#"><i class="bi bi-twitter-x"></i></a>
+        <a href="#"><i class="bi bi-github"></i></a>
+        <a href="#"><i class="bi bi-discord"></i></a>
+        <a href="#"><i class="bi bi-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

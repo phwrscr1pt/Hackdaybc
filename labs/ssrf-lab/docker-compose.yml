@@ -1,0 +1,7 @@
+services:
+  ssrf-lab:
+    build: .
+    container_name: ssrf-lab
+    ports:
+      - "7070:7070"
+    restart: unless-stopped

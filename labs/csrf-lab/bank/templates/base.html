@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ThaiBank{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a1628;
+      --blue:   #1a3a6b;
+      --mid:    #1e4fa0;
+      --gold:   #c9962a;
+      --gold2:  #e8b84b;
+      --light:  #f4f6fb;
+      --white:  #ffffff;
+      --gray:   #8892a4;
+      --border: #dde3ef;
+      --green:  #1a7a4a;
+      --red:    #c0392b;
+      --text:   #1a2540;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 20px rgba(10,22,40,0.4);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--navy);
+    }
+
+    .nav-brand-name {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-brand-sub {
+      font-size: 0.65rem;
+      color: var(--gold2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: block;
+      line-height: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+    }
+
+    .nav-links a.active {
+      background: rgba(201,150,42,0.2);
+      color: var(--gold2);
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-user-info {
+      text-align: right;
+    }
+
+    .nav-user-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .nav-user-acc {
+      font-size: 0.72rem;
+      color: var(--gold2);
+    }
+
+    .nav-avatar {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--mid), var(--gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: white;
+    }
+
+    .btn-logout {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .btn-logout:hover {
+      background: rgba(192,57,43,0.3);
+      border-color: rgba(192,57,43,0.5);
+      color: #ff8a80;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: 0 2px 16px rgba(26,54,107,0.06);
+    }
+
+    .card-header {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .card-sub {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.25rem;
+    }
+
+    /* FORM */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.01em;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--mid);
+      box-shadow: 0 0 0 3px rgba(30,79,160,0.1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.75rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--mid), var(--blue));
+      color: white;
+      box-shadow: 0 4px 14px rgba(30,79,160,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(30,79,160,0.4);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: var(--navy);
+      box-shadow: 0 4px 14px rgba(201,150,42,0.3);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(201,150,42,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--blue);
+    }
+
+    .btn-outline:hover {
+      background: var(--light);
+      border-color: var(--mid);
+    }
+
+    .btn-full { width: 100%; }
+
+    /* ALERT */
+    .alert {
+      padding: 0.85rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .alert-error {
+      background: #fdf2f2;
+      border: 1px solid #f5c6c6;
+      color: var(--red);
+    }
+
+    .alert-success {
+      background: #f0faf4;
+      border: 1px solid #b6e8cb;
+      color: var(--green);
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gray);
+      border-bottom: 2px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: var(--light); }
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody td {
+      padding: 0.9rem 1rem;
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-transfer  { background: #e8f0fe; color: #1a3a6b; }
+    .badge-deposit   { background: #e8f5ee; color: #1a7a4a; }
+    .badge-withdraw  { background: #fdf2f2; color: #c0392b; }
+
+    .amount-out { color: var(--red);   font-weight: 600; }
+    .amount-in  { color: var(--green); font-weight: 600; }
+
+    /* QUICK ACTION */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .quick-btn {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .quick-btn:hover {
+      border-color: var(--mid);
+      background: #f0f4ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30,79,160,0.1);
+    }
+
+    .quick-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .quick-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    /* BALANCE CARD */
+    .balance-card {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 60%, var(--mid) 100%);
+      border-radius: 20px;
+      padding: 2rem 2.25rem;
+      color: white;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: 60px;
+      width: 240px; height: 240px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 50%;
+    }
+
+    .balance-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.5rem;
+    }
+
+    .balance-amount {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.25rem;
+    }
+
+    .balance-currency {
+      font-size: 1rem;
+      color: var(--gold2);
+      font-weight: 500;
+    }
+
+    .balance-acc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .balance-acc span {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+  {% if session.user_id %}
+  <nav>
+    <a href="/dashboard" class="nav-brand">
+      <div class="nav-logo">TB</div>
+      <div>
+        <div class="nav-brand-name">ThaiBank</div>
+        <span class="nav-brand-sub">Digital Banking</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/dashboard" {% if request.path == '/dashboard' %}class="active"{% endif %}>หน้าหลัก</a>
+      <a href="/transfer"  {% if request.path == '/transfer'  %}class="active"{% endif %}>โอนเงิน</a>
+      <a href="/deposit"   {% if request.path == '/deposit'   %}class="active"{% endif %}>ฝากเงิน</a>
+      <a href="/withdraw"  {% if request.path == '/withdraw'  %}class="active"{% endif %}>ถอนเงิน</a>
+    </div>
+    <div class="nav-user">
+      <div class="nav-user-info">
+        <div class="nav-user-name">{{ session.username }}</div>
+        <div class="nav-user-acc">บัญชี {{ session.account_no }}</div>
+      </div>
+      <div class="nav-avatar">{{ session.username[0]|upper }}</div>
+      <a href="/logout" class="btn-logout">ออกจากระบบ</a>
+    </div>
+  </nav>
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    &copy; 2567 ธนาคารไทยแบงก์ จำกัด (มหาชน) &nbsp;|&nbsp; บริการทุกวัน 24 ชั่วโมง
+  </footer>
+</body>
+</html>

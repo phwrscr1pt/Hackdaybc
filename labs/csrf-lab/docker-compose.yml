@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  bank:
+    build: ./bank
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  evil:
+    build: ./evil
+    ports:
+      - "9999:9999"
+    restart: unless-stopped

