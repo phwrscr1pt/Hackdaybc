@@ -79,9 +79,12 @@ ls -la /home/john/.ssh/
 
 Output:
 ```
-drwxrwxrwx 1 john john 4096 ... .
-drwx--x--x 1 john john 4096 ... ..
+total 8
+drwxrwxrwx 1 john john 4096 Mar  6 17:51 .
+drwx--x--x 1 john john 4096 Mar  6 17:51 ..
 ```
+
+**Key observation:** Even though we couldn't list `/home/john/`, we CAN access `/home/john/.ssh/` directly! This is because john's home directory has `--x` (execute/traverse) permission for others, allowing us to pass through it if we know the path.
 
 ---
 
@@ -90,6 +93,18 @@ drwx--x--x 1 john john 4096 ... ..
 The `.ssh` directory has permissions `777` (rwxrwxrwx) - **world-writable!**
 
 This means **anyone** can write files into john's `.ssh` directory.
+
+**Why could we access .ssh but not list john's home?**
+
+Directory permissions work differently than file permissions:
+- `r` (read) = can list contents with `ls`
+- `x` (execute) = can traverse/enter the directory
+
+John's home is `drwx--x--x` (711):
+- Owner (john): `rwx` - full access
+- Others: `--x` - can only traverse (cd through), cannot list
+
+So we can't `ls /home/john/`, but we CAN access `/home/john/.ssh/` if we know the path!
 
 Let's also check if there's a hint.txt file we can't read yet:
 
