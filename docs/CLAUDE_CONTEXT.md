@@ -391,6 +391,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-06 | Updated walkthroughs: XSS search path (/search/search?q=), SSRF (LinkScope), File Upload (AetherVision AI) |
 | 2026-03-06 | Added missing nginx redirects for /sqli/*.php and /jwt/*.php with new filenames |
 | 2026-03-06 | Fixed login.php, signin.php headers warnings; config.php JWT_SECRET redefinition; header.php outdated nav links |
 | 2026-03-06 | Set up GitHub repo and git deployment workflow |
@@ -416,5 +417,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-06 (Added nginx redirects for new filenames)*
+*Last Updated: 2026-03-06 (Updated walkthroughs with correct paths and business names)*
 *This file helps Claude understand the project context in new sessions.*
