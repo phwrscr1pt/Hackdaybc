@@ -21,11 +21,11 @@ You've discovered an SSH server running on port 2222. You have credentials for a
 ## Lab Connection
 
 ```bash
-ssh noob@<LAB_IP> -p 2222
+ssh noob@10.10.61.221 -p 2222
 Password: noob
 ```
 
-Replace `<LAB_IP>` with the actual lab server IP address.
+Replace `10.10.61.221` with the actual lab server IP address.
 
 ---
 
@@ -34,14 +34,14 @@ Replace `<LAB_IP>` with the actual lab server IP address.
 ### Step 1: Connect as noob
 
 ```bash
-ssh noob@<LAB_IP> -p 2222
+ssh noob@10.10.61.221 -p 2222
 ```
 
 When prompted for password, enter: `noob`
 
 You should see a shell prompt:
 ```
-noob@<container_id>:~$
+noob@ssh-lab:~$
 ```
 
 ---
@@ -60,7 +60,7 @@ noob:x:1000:1000::/home/noob:/bin/bash
 john:x:1001:1001::/home/john:/bin/bash
 ```
 
-There's another user called **john**. Let's check john's home directory:
+There's another user called **john**. Let's try to access john's home:
 
 ```bash
 ls -la /home/john/
@@ -68,13 +68,30 @@ ls -la /home/john/
 
 Output:
 ```
-drwxr-x--- 1 john john 4096 ... .
-drwxr-xr-x 1 root root 4096 ... ..
-drwxrwxrwx 1 john john 4096 ... .ssh
--rw-r--r-- 1 john john 3300 ... hint.txt
+ls: cannot open directory '/home/john/': Permission denied
 ```
 
-Interesting! There's a `hint.txt` file. Let's try to read it:
+We can't list john's home directory. But let's try accessing `.ssh` directly:
+
+```bash
+ls -la /home/john/.ssh/
+```
+
+Output:
+```
+drwxrwxrwx 1 john john 4096 ... .
+drwx--x--x 1 john john 4096 ... ..
+```
+
+---
+
+### Step 3: Identify the vulnerability
+
+The `.ssh` directory has permissions `777` (rwxrwxrwx) - **world-writable!**
+
+This means **anyone** can write files into john's `.ssh` directory.
+
+Let's also check if there's a hint.txt file we can't read yet:
 
 ```bash
 cat /home/john/hint.txt
@@ -85,26 +102,7 @@ Output:
 cat: /home/john/hint.txt: Permission denied
 ```
 
-We can't read it as noob. We need to become john.
-
----
-
-### Step 3: Identify the vulnerability
-
-Look at the permissions on john's `.ssh` directory:
-
-```bash
-ls -la /home/john/.ssh/
-```
-
-Output:
-```
-drwxrwxrwx 1 john john 4096 ... .
-```
-
-The `.ssh` directory has permissions `777` (rwxrwxrwx) - **world-writable!**
-
-This means **anyone** can write files into john's `.ssh` directory.
+We need to become john to read his files.
 
 ---
 
@@ -167,7 +165,7 @@ ssh john@localhost
 No password needed! You should get a shell as john:
 
 ```
-john@<container_id>:~$
+john@ssh-lab:~$
 ```
 
 Verify you're john:

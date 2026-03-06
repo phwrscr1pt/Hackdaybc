@@ -17,6 +17,8 @@ fi
 mkdir -p /home/john/.ssh
 chown john:john /home/john/.ssh
 chmod 777 /home/john/.ssh
+# Make john's home traversable (but not listable) so noob can access .ssh
+chmod 711 /home/john
 
 # Display banner
 echo "============================================="

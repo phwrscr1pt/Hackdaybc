@@ -14,7 +14,11 @@ RUN chown john:john /home/john/hint.txt &&     chmod 644 /home/john/hint.txt
 
 # Create .ssh directory for john with permissive permissions
 # This is the vulnerability - noob can write to john .ssh
-RUN mkdir -p /home/john/.ssh &&     chown john:john /home/john/.ssh &&     chmod 777 /home/john/.ssh
+# chmod 711 on /home/john allows traversal but not listing
+RUN mkdir -p /home/john/.ssh && \
+    chown john:john /home/john/.ssh && \
+    chmod 777 /home/john/.ssh && \
+    chmod 711 /home/john
 
 # Copy SSH config
 COPY sshd_config /etc/ssh/sshd_config
