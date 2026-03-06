@@ -392,6 +392,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | Fixed JWT Weak Key walkthrough: correct cookie name (auth_token_secure), added OpenSSL signing method, working forged token |
 | 2026-03-07 | Enhanced walkthrough-sqli-jwt.md: added detailed step-by-step for UNION, Error-based, Blind SQLi, JWT None Algorithm, JWT Weak Key (690 lines added) |
 | 2026-03-07 | Enhanced SSH walkthrough: added key transfer methods (SCP, copy-paste, one-line injection), fixed output format, added directory permissions explanation (r vs x) |
 | 2026-03-07 | Fixed SSH lab permissions: added chmod 711 /home/john in Dockerfile and entrypoint.sh |
@@ -421,5 +422,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Enhanced SSH walkthrough with key transfer methods and permissions explanation)*
+*Last Updated: 2026-03-07 (Fixed JWT Weak Key walkthrough with correct cookie name)*
 *This file helps Claude understand the project context in new sessions.*
