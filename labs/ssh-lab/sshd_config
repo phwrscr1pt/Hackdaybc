@@ -1,0 +1,39 @@
+# SSH Lab - Vulnerable Configuration for Training
+
+Port 22
+ListenAddress 0.0.0.0
+
+# Host keys
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Authentication - General
+PermitRootLogin no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+# VULNERABILITY: StrictModes disabled
+# This allows SSH to work even if .ssh directory has wrong permissions
+# Normally SSH refuses to use authorized_keys if permissions are too open
+StrictModes no
+
+# Password authentication enabled by default
+PasswordAuthentication yes
+
+# Other settings
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding no
+PrintMotd yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# VULNERABILITY: Disable password auth ONLY for john
+# This forces attackers to find another way to login as john
+Match User john
+    PasswordAuthentication no
