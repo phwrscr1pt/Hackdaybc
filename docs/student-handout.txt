@@ -1,0 +1,76 @@
+╔══════════════════════════════════════════════════════════════╗
+║           LeaguesOfCode Security Labs - Student Guide        ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Web Portal: http://10.10.61.221/                            ║
+║                                                              ║
+║  SSH Lab (DO THIS FIRST!):                                   ║
+║    ssh noob@10.10.61.221 -p 2222                             ║
+║    Password: noob                                            ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  ACCOUNT SETUP:                                              ║
+║                                                              ║
+║  CSRF Bank (/share/):                                        ║
+║    1. Go to http://10.10.61.221/share/                       ║
+║    2. Click "Register" to create YOUR account                ║
+║    3. Choose your own username and password                  ║
+║    4. You will get a unique account number (1002, 1003...)   ║
+║                                                              ║
+║  JWT Labs (/account/):                                       ║
+║    Use: john / password123  OR  wiener / peter               ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  LABS TO COMPLETE:                                           ║
+║                                                              ║
+║  1. SSH Key Auth    - Port 2222 (get hint.txt!)              ║
+║  2. SQL Injection   - /resources/                            ║
+║  3. JWT Auth        - /account/                              ║
+║  4. File Upload     - /profile/                              ║
+║  5. CSRF            - /share/ (register your own account!)   ║
+║  6. SSRF            - /api/                                  ║
+║  7. XSS             - /search/                               ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  CSRF LAB GOAL:                                              ║
+║    Make a victim transfer money to YOUR account!             ║
+║    Victim account: somchai (has 1,000,000 baht)              ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  FLAGS TO FIND:                                              ║
+║                                                              ║
+║  - File Upload: flag{...}                                    ║
+║  - JWT (None Alg): MASTER_KEY_2026                           ║
+║  - JWT (Weak Key): JWT_WEAK_KEY_CRACKED_2026                 ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  TIPS:                                                       ║
+║                                                              ║
+║  - Complete SSH lab FIRST to get hints for all other labs    ║
+║  - Use Browser DevTools (F12) to inspect requests            ║
+║  - Try Burp Suite for intercepting/modifying requests        ║
+║  - Check https://jwt.io for JWT decoding                     ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+================================================================================
+                              QUICK REFERENCE
+================================================================================
+
+Lab URLs:
+  - Portal:        http://10.10.61.221/
+  - SQL Injection: http://10.10.61.221/resources/
+  - JWT Auth:      http://10.10.61.221/account/
+  - File Upload:   http://10.10.61.221/profile/
+  - CSRF Bank:     http://10.10.61.221/share/
+  - CSRF Evil:     http://10.10.61.221/evil/
+  - SSRF:          http://10.10.61.221/api/
+  - XSS:           http://10.10.61.221/search/
+
+SSH Lab:
+  ssh noob@10.10.61.221 -p 2222
+  Password: noob
+
+================================================================================
+                            GOOD LUCK & HAVE FUN!
+================================================================================

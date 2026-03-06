@@ -1,0 +1,47 @@
+# Prompt for Arbitrary File Upload Module  
+(LeaguesOfCode Lab Portal – Decentralized / Abstract Version)
+You are building **one isolated feature** inside the educational training application "LeaguesOfCode Lab Portal".  
+The **exact purpose / name / story of this feature (profile avatar, report submission, document upload, certificate generator, etc.) will be decided by the master context / index.php maintainer**.  
+**Do NOT invent or assume a specific business story.** Keep your part context-less and generic.
+Your responsibility is ONLY to create a classic arbitrary file upload demonstration page that follows these abstract rules:
+## Core Educational Goal
+Demonstrate the common insecure pattern where a web application:
+- allows users to upload any file type
+- stores the file in a web-accessible directory
+- does not sufficiently validate content-type, extension, or content
+- allows execution of uploaded code (PHP, in this case)
+This is purely for controlled, local Docker lab teaching — students learn why unrestricted file upload is dangerous.
+## Required Overall Flow (minimal & abstract)
+1. Display a simple HTML form with:
+   - file input field
+   - optional description / title field (for realism)
+   - submit button
+2. On POST:
+   - receive the uploaded file
+   - move it to a publicly accessible folder (/var/www/html/uploads/ or similar)
+   - generate a link to the uploaded file so the user can see/access it
+   - show success message with the direct URL to the file
+3. Intentionally weak validation (this is the teaching point):
+   - allow almost any filename (including double extensions: shell.php.png, totally_legit.exe.jpg)
+   - no strong content-type check (or fake it with client-supplied mime)
+   - no magic byte / file content validation
+   - no renaming to safe extension
+   - directory must allow PHP execution (no .htaccess deny from php)
+4. Show the list of previously uploaded files (optional but helpful for demo)
+## CSV-related insecure part (required – Metasploit tie-in)
+Include **one** of the following CSV abuse patterns (choose whichever is easier for you):
+Option A – CSV export abuse  
+After upload, offer a button “Export upload history as CSV”.  
+Make the CSV generation vulnerable to formula injection (allow =, +, -, @ characters in filename/description without escaping).
+Option B – CSV disguised upload  
+Allow uploading files named *.csv but do NOT block .php / .phtml inside them.  
+If someone uploads shell.php renamed as report.csv, it still gets stored and can be accessed/executed if the web server interprets it as PHP.
+The goal is: student can demonstrate this CSV-related weakness using curl or Metasploit modules (concept only – no exploit code in your files).
+## Technical Constraints
+- Folder: /var/www/html/[your-folder-name] (suggested: reports/ or documents/ or uploads/ — let master decide final name)
+- Use Bootstrap 5 dark theme (CDN)
+- Include config.php if DB needed (but not mandatory for this module)
+- Make uploads directory writable by www-data
+- Add comment in code:  
+  `// Educational demonstration: shows classic unrestricted file upload pattern`
+- Language: UI titles in English, descriptions/subtitles can be Thai (follow bootcamp style)
