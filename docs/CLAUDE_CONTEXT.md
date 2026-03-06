@@ -26,7 +26,12 @@ This is a unified web application hosting multiple security vulnerability labs f
 - **SSH Key:** Configured (Claude can SSH without password)
 
 ### Network Access
-Claude cannot reach the Lab VM (10.10.61.221) directly. Connection requires a jump host:
+**Direct Access via Tailscale Subnet Routing (Preferred):**
+```
+Claude/User → (Tailscale Subnet) → loc@10.10.61.221
+```
+
+**Alternative via Jump Host:**
 ```
 Claude/User → (Tailscale) → root-agent@100.107.182.15 → (LAN) → loc@10.10.61.221
 ```
@@ -160,6 +165,59 @@ Updated to match teaching materials (SQLblind.pdf, SQLerrorbased.pdf):
 
 ---
 
+## Pre-Class Setup (Reset Scripts)
+
+### Reset Scripts Location
+```
+scripts/
+├── reset-labs.sh        # Main reset script (run on server)
+├── reset-direct.bat     # Windows - direct Tailscale access
+├── reset-remote.bat     # Windows - via jump host
+└── reset-remote.sh      # Linux/Mac - via jump host
+```
+
+### How to Reset Labs Before Class
+
+**Option 1: Direct (Tailscale Subnet Routing)**
+```bash
+# From Windows
+D:\LOC\HackdayBc\labs-source\scripts\reset-direct.bat
+
+# Or SSH directly
+ssh loc@10.10.61.221 "bash /home/loc/HackdayBc/scripts/reset-labs.sh"
+```
+
+**Option 2: Via Jump Host**
+```bash
+ssh -J root-agent@100.107.182.15 loc@10.10.61.221 "bash /home/loc/HackdayBc/scripts/reset-labs.sh"
+```
+
+**Script Options:**
+```bash
+bash scripts/reset-labs.sh          # Full reset + connectivity test
+bash scripts/reset-labs.sh --quick  # Quick reset (skip tests)
+bash scripts/reset-labs.sh --verify # Verify only (no reset)
+```
+
+### What Gets Reset
+| Component | Action |
+|-----------|--------|
+| CSRF Bank | Delete all accounts except somchai (฿1,000,000) |
+| SSH Lab | Clear john's authorized_keys, remove noob's keys |
+| File Upload | Clear all uploaded files from /app/uploads/ |
+| XSS/SSRF Labs | Restart containers for clean state |
+| All Containers | Verify 9 containers are running |
+| Connectivity | Test all 8 web endpoints + SSH port 2222 |
+
+### Pre-Class Checklist
+1. ✅ Run reset script: `bash scripts/reset-labs.sh`
+2. ✅ Verify all checkmarks are green
+3. ✅ Ensure students have network access to 10.10.61.221
+4. ✅ Distribute `docs/student-handout.txt`
+5. ✅ **DO NOT** give students walkthrough documents (instructor answers)
+
+---
+
 ## File Locations
 
 ### Windows (Local Development)
@@ -201,6 +259,11 @@ D:\LOC\HackdayBc\
 │   ├── summarizeSQLI.txt
 │   ├── summarizeBrokenAuth.txt
 │   └── linkgithub.txt
+├── scripts/                 # Instructor tools
+│   ├── reset-labs.sh        # Main reset script
+│   ├── reset-direct.bat     # Windows direct access
+│   ├── reset-remote.bat     # Windows via jump host
+│   └── reset-remote.sh      # Linux/Mac via jump host
 ├── archive/                 # Old versions (backup)
 │   └── walkthrough-*.md
 └── lab/                     # Original lab (backup)
@@ -214,10 +277,12 @@ D:\LOC\HackdayBc\
 │   ├── account/             # JWT labs (was jwt/)
 │   └── members/             # Member Directory
 ├── labs/                    # External labs
+├── scripts/                 # Reset and maintenance scripts
+│   └── reset-labs.sh        # Run before each class
 ├── nginx/nginx.conf         # Reverse proxy with redirects
 └── docker-compose.yml       # Container orchestration
 ```
-Note: VM structure updated 2026-03-06 with realism refactoring.
+Note: VM structure updated 2026-03-07 with reset scripts.
 
 ---
 
@@ -371,6 +436,9 @@ ssh -J root-agent@100.107.182.15 loc@10.10.61.221 "cd /home/loc && tar -czvf Hac
 - [x] Create local labs-source folder with all code (2026-03-06)
 - [x] Set up git deployment workflow (edit → push → pull) (2026-03-06)
 - [x] Add version numbering to portal footer (v1.0.1) (2026-03-06)
+- [x] Create lab reset scripts for instructor use (2026-03-07)
+- [x] Test all labs via Tailscale subnet routing (2026-03-07)
+- [x] Verify all 12 lab endpoints working (2026-03-07)
 
 ### Pending
 - [ ] Create student scoring system
@@ -393,6 +461,9 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | **Created lab reset scripts:** reset-labs.sh, reset-direct.bat, reset-remote.bat/sh for pre-class setup |
+| 2026-03-07 | **Tested all labs via Tailscale:** Verified 12 endpoints working (SSH, SQL×5, JWT×2, File Upload, CSRF, SSRF, XSS) |
+| 2026-03-07 | Reset script features: CSRF bank cleanup, SSH key clearing, upload removal, container verification, connectivity tests |
 | 2026-03-07 | Enhanced walkthrough-ssrf.md: added detailed step-by-step (Steps 1-8), IP bypass techniques, Python exploit, attack flow diagram |
 | 2026-03-07 | Enhanced walkthrough-file-upload.md: added detailed step-by-step (Steps 1-8), polyglot creation, Python exploit, bash one-liner |
 | 2026-03-07 | Enhanced walkthrough-csrf.md: added detailed step-by-step (Steps 1-9), attack payloads, curl testing, troubleshooting |
@@ -428,5 +499,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Added detailed SSRF walkthrough)*
+*Last Updated: 2026-03-07 (Added reset scripts, tested all labs via Tailscale)*
 *This file helps Claude understand the project context in new sessions.*
