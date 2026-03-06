@@ -271,6 +271,7 @@ Note: VM structure updated 2026-03-06 with realism refactoring.
 10. **signin.php headers warning** - Moved `header.php` include after `setcookie()` call to fix "headers already sent" error
 11. **config.php JWT_SECRET redefinition** - Added `if (!defined('JWT_SECRET'))` wrapper to prevent warning
 12. **header.php outdated links** - Updated navigation: `/sqli/` → `/resources/`, `/jwt/` → `/account/`
+13. **Missing nginx redirects for new filenames** - Added redirects for `/sqli/*.php` and `/jwt/*.php` using new filenames (login.php, directory.php, portal.php, etc.)
 
 ---
 
@@ -390,6 +391,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-06 | Added missing nginx redirects for /sqli/*.php and /jwt/*.php with new filenames |
 | 2026-03-06 | Fixed login.php, signin.php headers warnings; config.php JWT_SECRET redefinition; header.php outdated nav links |
 | 2026-03-06 | Set up GitHub repo and git deployment workflow |
 | 2026-03-06 | Created labs-source folder with all source code |
@@ -414,5 +416,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-06 (Fixed PHP warnings, updated nav links)*
+*Last Updated: 2026-03-06 (Added nginx redirects for new filenames)*
 *This file helps Claude understand the project context in new sessions.*
