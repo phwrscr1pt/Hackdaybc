@@ -488,7 +488,7 @@
 <body>
   {% if session.user_id %}
   <nav>
-    <a href="/dashboard" class="nav-brand">
+    <a href="dashboard" class="nav-brand">
       <div class="nav-logo">TB</div>
       <div>
         <div class="nav-brand-name">ThaiBank</div>
@@ -496,10 +496,10 @@
       </div>
     </a>
     <div class="nav-links">
-      <a href="/dashboard" {% if request.path == '/dashboard' %}class="active"{% endif %}>หน้าหลัก</a>
-      <a href="/transfer"  {% if request.path == '/transfer'  %}class="active"{% endif %}>โอนเงิน</a>
-      <a href="/deposit"   {% if request.path == '/deposit'   %}class="active"{% endif %}>ฝากเงิน</a>
-      <a href="/withdraw"  {% if request.path == '/withdraw'  %}class="active"{% endif %}>ถอนเงิน</a>
+      <a href="dashboard" {% if request.path.endswith('/dashboard') %}class="active"{% endif %}>หน้าหลัก</a>
+      <a href="transfer"  {% if request.path.endswith('/transfer')  %}class="active"{% endif %}>โอนเงิน</a>
+      <a href="deposit"   {% if request.path.endswith('/deposit')   %}class="active"{% endif %}>ฝากเงิน</a>
+      <a href="withdraw"  {% if request.path.endswith('/withdraw')  %}class="active"{% endif %}>ถอนเงิน</a>
     </div>
     <div class="nav-user">
       <div class="nav-user-info">
@@ -507,7 +507,7 @@
         <div class="nav-user-acc">บัญชี {{ session.account_no }}</div>
       </div>
       <div class="nav-avatar">{{ session.username[0]|upper }}</div>
-      <a href="/logout" class="btn-logout">ออกจากระบบ</a>
+      <a href="logout" class="btn-logout">ออกจากระบบ</a>
     </div>
   </nav>
   {% endif %}

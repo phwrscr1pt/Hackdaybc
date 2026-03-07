@@ -13,7 +13,7 @@
     <div class="alert alert-error">⚠ {{ error }}</div>
     {% endif %}
 
-    <form method="POST" action="/transfer">
+    <form method="POST" action="transfer">
       <div class="form-group">
         <label>เลขที่บัญชีปลายทาง</label>
         <input type="text" name="to_account" placeholder="เช่น 1002" autocomplete="off">
@@ -23,7 +23,7 @@
         <input type="number" name="amount" placeholder="0.00" min="1" step="0.01">
       </div>
       <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
-        <a href="/dashboard" class="btn btn-outline" style="flex:1; text-align:center; line-height: 2.5;">ยกเลิก</a>
+        <a href="dashboard" class="btn btn-outline" style="flex:1; text-align:center; line-height: 2.5;">ยกเลิก</a>
         <button type="submit" class="btn btn-primary" style="flex:2;">ยืนยันการโอนเงิน</button>
       </div>
     </form>
