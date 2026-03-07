@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session
 from database import init_db_once, get_db, teardown_db
 import sqlite3
 import time
@@ -18,14 +18,14 @@ def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
-            return redirect(url_for('index'))
+            return redirect('./')
         return f(*args, **kwargs)
     return decorated
 
 @app.route('/')
 def index():
     if 'user_id' in session:
-        return redirect(url_for('dashboard'))
+        return redirect('dashboard')
     return render_template('index.html')
 
 @app.route('/login', methods=['POST'])
@@ -41,7 +41,7 @@ def login():
         session['user_id']    = user['id']
         session['username']   = user['username']
         session['account_no'] = user['account_no']
-        return redirect(url_for('dashboard'))
+        return redirect('dashboard')
     return render_template('index.html', error='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
 
 @app.route('/register', methods=['POST'])
@@ -77,7 +77,7 @@ def register():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect('./')
 
 @app.route('/dashboard')
 @login_required
@@ -126,7 +126,7 @@ def transfer():
             (from_acc, to_account, amount, 'transfer')
         )
         db.commit()
-        return redirect(url_for('dashboard'))
+        return redirect('dashboard')
     return render_template('transfer.html')
 
 @app.route('/deposit', methods=['GET', 'POST'])
@@ -147,7 +147,7 @@ def deposit():
             (acc, acc, amount, 'deposit')
         )
         db.commit()
-        return redirect(url_for('dashboard'))
+        return redirect('dashboard')
     return render_template('deposit.html')
 
 @app.route('/withdraw', methods=['GET', 'POST'])
@@ -171,7 +171,7 @@ def withdraw():
             (acc, acc, amount, 'withdraw')
         )
         db.commit()
-        return redirect(url_for('dashboard'))
+        return redirect('dashboard')
     return render_template('withdraw.html')
 
 if __name__ == '__main__':
