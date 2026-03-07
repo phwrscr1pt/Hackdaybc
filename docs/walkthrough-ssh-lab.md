@@ -204,7 +204,7 @@ Now read the hint.txt file:
 cat ~/hint.txt
 ```
 
-You'll find John's personal development notes containing:
+You'll find a link to John's personal development notes:
 
 ```
 ================================================================================
@@ -212,33 +212,26 @@ You'll find John's personal development notes containing:
                       Internal Use Only - DO NOT SHARE
 ================================================================================
 
-- Database credentials (MySQL)
-- SQL injection payloads that work on /members/
-- JWT secret key and exploitation techniques
-- File upload bypass methods
-- CSRF attack templates
-- SSRF internal endpoints
-- XSS payloads
-- Quick reference table for all labs
+https://docs.google.com/document/d/1MAhGHpYvL6jom4uGCN8-DcU9SmxWShKyLyQrwyJ-7DE/edit?usp=sharing
+
+================================================================================
 ```
 
-**Congratulations!** You now have insider knowledge to help you complete all the web labs.
+**Congratulations!** Open the Google Doc link to access insider knowledge that will help you complete all the web labs.
 
 ---
 
 ## What You'll Find in John's Notes
 
-The `hint.txt` file contains detailed information for each web lab:
+The `hint.txt` file contains a link to John's Google Doc with detailed information for each web lab, including:
 
-| Lab | Information Revealed |
-|-----|---------------------|
-| Database | MySQL credentials: `locadmin` / `locpass123` |
-| SQL Injection | Working UNION payloads, table names, column counts |
-| JWT | Secret key: `sup3r_s3cr3t_jwt_k3y_2024`, algorithm bypass |
-| File Upload | JPEG magic bytes, polyglot technique, upload path |
-| CSRF | Transfer endpoint, attack template HTML, test accounts |
-| SSRF | Internal URL: `http://127.0.0.1:7070/internal/config` |
-| XSS | Multiple payloads including cookie stealer |
+- Database credentials and table structures
+- SQL injection payloads and techniques
+- JWT secret keys and algorithm bypass methods
+- File upload bypass techniques
+- CSRF attack templates
+- SSRF internal endpoints
+- XSS payloads
 
 **This is why SSH lab is the "Pre-Lab"** - completing it gives you a significant advantage!
 
@@ -299,7 +292,7 @@ To fix this vulnerability:
 | User 1 | noob (password: noob) |
 | User 2 | john (key auth only) |
 | Vulnerability | World-writable .ssh + StrictModes no |
-| Reward | Developer notes with hints for all web labs |
+| Reward | Link to Google Doc with hints for all web labs |
 
 ---
 
