@@ -3,6 +3,33 @@
                       Internal Use Only - DO NOT SHARE
 ================================================================================
 
+Hey, this is my personal notes for the LOC internal systems.
+I'm documenting all the web apps I manage so I don't forget...
+
+=== INTERNAL SYSTEMS MAP ===
+
+  /resources/    - Resource Library (employee login, member directory)
+                   SQL database backend - need to review input validation...
+
+  /account/      - Account Services (user authentication portal)
+                   JWT tokens for session management - is the key strong enough?
+
+  /profile/      - Profile Manager (employee photo uploads)
+                   File type checking implemented... I think?
+
+  /share/        - Credit System (internal point transfers)
+                   Quick transfer form - no confirmation needed for speed
+
+  /api/          - Developer API (URL fetching service)
+                   Connects to internal services - restricted access?
+
+  /search/       - Tech Blog (knowledge base search)
+                   Search results display - sanitization enabled?
+
+=== REMINDER ===
+More detailed hints available at:
 https://docs.google.com/document/d/1MAhGHpYvL6jom4uGCN8-DcU9SmxWShKyLyQrwyJ-7DE/edit?usp=sharing
 
+================================================================================
+                    TODO: Add proper security review before launch
 ================================================================================
