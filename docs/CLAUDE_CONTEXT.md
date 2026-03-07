@@ -79,7 +79,7 @@ SSH Lab (Port 2222) → Isolated network (ssh_network)
 - Created isolated SSH container on port 2222
 - Users: `noob` (password: noob) and `john` (target)
 - Vulnerability: World-writable .ssh directory + StrictModes disabled
-- Reward: john's hint.txt contains credentials for all other labs
+- Reward: john's hint.txt contains link to Google Doc with hints for all labs
 
 ### 4. Refactored for Realism (2026-03-06)
 Applied "realism rules" from Bootcamp1 Hackday Prompt.pdf:
@@ -339,6 +339,9 @@ Note: VM structure updated 2026-03-07 with reset scripts.
 13. **Missing nginx redirects for new filenames** - Added redirects for `/sqli/*.php` and `/jwt/*.php` using new filenames (login.php, directory.php, portal.php, etc.)
 14. **SSH lab permission denied** - john's home was `drwxr-x---` (750), preventing noob from traversing to .ssh directory. Fixed by adding `chmod 711 /home/john` in both Dockerfile and entrypoint.sh to allow directory traversal.
 15. **SSRF lab navigation broken** - Links in app.py used root paths (`/`, `/resources`, `/wordlist.txt`) but lab is served at `/api/` via nginx. Fixed by updating all links to use `/api/` prefix.
+16. **CSRF bank absolute form paths** - Form actions used absolute paths (`/login`, `/register`) causing 404 when served at `/share/`. Fixed by changing to relative paths (`login`, `register`) in all templates.
+17. **CSRF bank missing trailing slash redirect** - Accessing `/share` without trailing slash caused relative URLs to resolve incorrectly. Added nginx redirects: `/share` → `/share/`, `/profile` → `/profile/`, etc.
+18. **CSRF bank Flask url_for() redirects** - Flask's `url_for()` generated absolute paths (`/dashboard`) instead of relative. Changed all redirects to use relative paths (`redirect('dashboard')`, `redirect('./')`).
 
 ---
 
@@ -461,6 +464,8 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | **Fixed CSRF bank routing:** Changed form actions and Flask redirects to use relative paths; added nginx trailing slash redirects for `/share`, `/profile`, `/api`, `/evil`, `/search` |
+| 2026-03-07 | **Updated SSH lab hint.txt:** Now contains Google Docs link instead of inline hints; updated walkthrough-ssh-lab.md accordingly |
 | 2026-03-07 | **Created lab reset scripts:** reset-labs.sh, reset-direct.bat, reset-remote.bat/sh for pre-class setup |
 | 2026-03-07 | **Tested all labs via Tailscale:** Verified 12 endpoints working (SSH, SQL×5, JWT×2, File Upload, CSRF, SSRF, XSS) |
 | 2026-03-07 | Reset script features: CSRF bank cleanup, SSH key clearing, upload removal, container verification, connectivity tests |
@@ -499,5 +504,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Added reset scripts, tested all labs via Tailscale)*
+*Last Updated: 2026-03-07 (Fixed CSRF bank routing, updated SSH hint.txt to Google Docs link)*
 *This file helps Claude understand the project context in new sessions.*
