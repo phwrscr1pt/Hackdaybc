@@ -12,7 +12,7 @@ I'm documenting all the web apps I manage so I don't forget...
                    SQL database backend - need to review input validation...
 
   /account/      - Account Services (user authentication portal)
-                   JWT tokens for session management - is the key strong enough?
+                   JWT tokens for session management - standard implementation
 
   /profile/      - Profile Manager (employee photo uploads)
                    File type checking implemented... I think?
