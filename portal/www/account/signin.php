@@ -100,8 +100,7 @@ require_once '../includes/header.php';
                         <h6 style="color: var(--text-muted);"><i class="bi bi-info-circle me-1"></i>Test Accounts</h6>
                         <div class="small">
                             <code>john / password123</code> (user)<br>
-                            <code>wiener / peter</code> (user)<br>
-                            <code>admin / admin</code> (administrator)
+                            <code>wiener / peter</code> (user)
                         </div>
                     </div>
                 </div>

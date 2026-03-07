@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <p class="card-text text-light">
-                            Dashboard ที่ verify signature - ต้อง crack key ด้วย hashcat
+                            Dashboard พร้อมระบบ verification ขั้นสูง
                         </p>
                         
                     </div>
@@ -136,14 +136,11 @@
                 <i class="bi bi-info-circle me-1"></i>Test Accounts
             </h6>
             <div class="row text-light">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <small><code>john / password123</code> (user)</small>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <small><code>wiener / peter</code> (user)</small>
-                </div>
-                <div class="col-md-4">
-                    <small><code>admin / admin</code> (administrator)</small>
                 </div>
             </div>
         </div>
