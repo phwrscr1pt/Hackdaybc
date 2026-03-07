@@ -365,6 +365,8 @@ Note: VM structure updated 2026-03-07 with reset scripts.
 16. **CSRF bank absolute form paths** - Form actions used absolute paths (`/login`, `/register`) causing 404 when served at `/share/`. Fixed by changing to relative paths (`login`, `register`) in all templates.
 17. **CSRF bank missing trailing slash redirect** - Accessing `/share` without trailing slash caused relative URLs to resolve incorrectly. Added nginx redirects: `/share` → `/share/`, `/profile` → `/profile/`, etc.
 18. **CSRF bank Flask url_for() redirects** - Flask's `url_for()` generated absolute paths (`/dashboard`) instead of relative. Changed all redirects to use relative paths (`redirect('dashboard')`, `redirect('./')`).
+19. **JWT admin credentials exposed** - Test Accounts box on signin.php and account/index.php showed `admin / admin (administrator)`, allowing direct admin login without exploiting JWT. Removed admin from displayed accounts.
+20. **JWT hashcat hint exposed** - Secure Portal card showed "ต้อง crack key ด้วย hashcat" which revealed the attack method. Changed to neutral "Dashboard พร้อมระบบ verification ขั้นสูง".
 
 ---
 
@@ -487,6 +489,8 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | **Removed JWT admin credentials from UI:** Removed `admin/admin` from Test Accounts on signin.php and index.php; removed hashcat hint from Secure Portal description |
+| 2026-03-07 | **Updated SSH hint.txt with lab map:** Added internal systems map showing all lab paths with subtle vulnerability hints; kept Google Docs link for detailed hints |
 | 2026-03-07 | **Comprehensive lab verification:** Tested all 11 labs from Windows client (10.10.61.221) with documented payloads - all passed |
 | 2026-03-07 | **Fixed CSRF bank routing:** Changed form actions and Flask redirects to use relative paths; added nginx trailing slash redirects for `/share`, `/profile`, `/api`, `/evil`, `/search` |
 | 2026-03-07 | **Updated SSH lab hint.txt:** Now contains Google Docs link instead of inline hints; updated walkthrough-ssh-lab.md accordingly |
@@ -528,5 +532,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Comprehensive lab verification from Windows client - all 11 labs passed)*
+*Last Updated: 2026-03-07 (Removed JWT admin credentials from UI, updated SSH hint.txt with lab paths map)*
 *This file helps Claude understand the project context in new sessions.*
