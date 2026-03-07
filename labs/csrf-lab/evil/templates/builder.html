@@ -99,7 +99,7 @@
       <div class="panel-header"><i class="bi bi-lightning-charge"></i>Actions</div>
       <div class="panel-body">
         <button class="action-btn btn-store" onclick="storePayload()"><i class="bi bi-cloud-arrow-up"></i>Store Website</button>
-        <a class="action-btn btn-launch" href="/site" target="_blank"><i class="bi bi-box-arrow-up-right"></i>Simulate Victim</a>
+        <a class="action-btn btn-launch" href="site" target="_blank"><i class="bi bi-box-arrow-up-right"></i>Simulate Victim</a>
       </div>
     </div>
     <div class="panel-card">
@@ -164,7 +164,7 @@
     const form = new FormData();
     form.append('payload', textarea.value);
     try {
-      const res = await fetch('/store', { method: 'POST', body: form });
+      const res = await fetch('store', { method: 'POST', body: form });
       const data = await res.json();
       if (data.status === 'ok') { showToast('Stored — /site is ready'); }
       else { showToast('Store failed', false); }
